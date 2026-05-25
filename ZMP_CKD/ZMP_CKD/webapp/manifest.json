@@ -1,0 +1,256 @@
+{
+  "_version": "1.37.0",
+  "sap.app": {
+    "id": "zpmckd",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.11.5",
+      "toolsId": "5031a9e0-bdf1-4bd7-bfc2-322ea1a65cf4"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/sap/opu/odata/sap/ZPM_FIORI_CKD/",
+        "type": "OData",
+        "settings": {
+          "annotations": [
+            "ZPM_FIORI_CKD_VAN",
+            "annotation"
+          ],
+          "localUri": "localService/mainService/metadata.xml",
+          "odataVersion": "2.0"
+        }
+      },
+      "ZPM_FIORI_CKD_VAN": {
+        "uri": "/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Annotations(TechnicalName='ZPM_FIORI_CKD_VAN',Version='0001')/$value/",
+        "type": "ODataAnnotation",
+        "settings": {
+          "localUri": "localService/mainService/ZPM_FIORI_CKD_VAN.xml"
+        }
+      },
+      "annotation": {
+        "type": "ODataAnnotation",
+        "uri": "annotations/annotation.xml",
+        "settings": {
+          "localUri": "annotations/annotation.xml"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.96.21",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ushell": {},
+        "sap.f": {},
+        "sap.ui.comp": {},
+        "sap.ui.generic.app": {},
+        "sap.suite.ui.generic.template": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "zpmckd.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "defaultBindingMode": "TwoWay",
+          "defaultCountMode": "Inline",
+          "refreshAfterChange": false,
+          "metadataUrlParams": {
+            "sap-value-list": "none"
+          }
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {},
+      "routes": [],
+      "targets": {}
+    },
+    "extends": {
+      "extensions": {
+        "sap.ui.viewExtensions": {
+          "sap.suite.ui.generic.template.ListReport.view.ListReport": {
+            "ResponsiveTableColumnsExtension|ZPMI_CKD_CUST": {
+              "type": "XML",
+              "fragmentName": "zpmckd.ext.fragment.ColumnExtension1",
+              "className": "sap.ui.core.Fragment"
+            },
+            "ResponsiveTableCellsExtension|ZPMI_CKD_CUST": {
+              "fragmentName": "zpmckd.ext.fragment.CellExtension1",
+              "className": "sap.ui.core.Fragment",
+              "type": "XML"
+            },
+            "GridTableColumnsExtension|ZPMI_CKD_CUST": {
+              "type": "XML",
+              "fragmentName": "zpmckd.ext.fragment.ColumnExtension1",
+              "className": "sap.ui.core.Fragment"
+            },
+            "ResponsiveTable|ZPMI_CKD_OBJ": {
+              "fragmentName": "zpmckd.ext.fragment.ObjednavkaExtension",
+              "className": "sap.ui.core.Fragment",
+              "type": "XML"
+            },
+            "ResponsiveTable|ZPMI_CKD_POBJ": {
+              "fragmentName": "zpmckd.ext.fragment.PobjExtension",
+              "className": "sap.ui.core.Fragment",
+              "type": "XML"
+            },
+            "ResponsiveTable|ZPMI_CKD_KOSIK": {
+              "fragmentName": "zpmckd.ext.fragment.KosikExtension",
+              "className": "sap.ui.core.Fragment",
+              "type": "XML"
+            },
+            "ResponsiveTable|ZPMI_CKD_EKPO": {
+              "fragmentName": "zpmckd.ext.fragment.EkpoExtension",
+              "className": "sap.ui.core.Fragment",
+              "type": "XML"
+            },
+            "ResponsiveTable|ZPMI_CKD_SPOTREBA": {
+              "fragmentName": "zpmckd.ext.fragment.SpotrebaExtension",
+              "className": "sap.ui.core.Fragment",
+              "type": "XML"
+            },
+            "Menu|ZPMI_CKDI_CUST": {
+              "fragmentName": "zpmckd.ext.fragment.MatnrMenuExtension",
+              "className": "sap.ui.core.Fragment",
+              "type": "XML"
+            },
+            "MenuPoznamkaDialog|ZPMI_CKDI_CUST": {
+              "fragmentName": "zpmckd.ext.fragment.MatnrPoznamkaExtension",
+              "className": "sap.ui.core.Fragment",
+              "type": "XML"
+            },
+            "HladinaDialog|ZPMI_CKDI_CUST": {
+              "fragmentName": "zpmckd.ext.fragment.HladinaExtension",
+              "className": "sap.ui.core.Fragment",
+              "type": "XML"
+            },
+            "PoptavkaDialog|ZPMI_CKDI_CUST": {
+              "fragmentName": "zpmckd.ext.fragment.PoptavkaExtension",
+              "className": "sap.ui.core.Fragment",
+              "type": "XML"
+            },
+            "NoteMenu|ZPMI_CKDI_CUST": {
+              "fragmentName": "zpmckd.ext.fragment.NoteMenuExtension",
+              "className": "sap.ui.core.Fragment",
+              "type": "XML"
+            },
+            "ResponsiveTable|ZPMI_CKD_YEARMAT": {
+              "fragmentName": "zpmckd.ext.fragment.MatnrYearExtension",
+              "className": "sap.ui.core.Fragment",
+              "type": "XML"
+            },
+            "ResponsiveTable|ZPMI_CKD_BDMNG": {
+              "fragmentName": "zpmckd.ext.fragment.BdmngExtension",
+              "className": "sap.ui.core.Fragment",
+              "type": "XML"
+            },
+            "SmartFilterBarControlConfigurationExtension|ZPMI_CKD_CUST": {
+              "className": "sap.ui.core.Fragment",
+              "fragmentName": "zpmckd.ext.fragment.MatnrFilterExtension",
+              "type": "XML"
+            }
+          }
+        },
+        "sap.ui.controllerExtensions": {
+          "sap.suite.ui.generic.template.ListReport.view.ListReport": {
+            "controllerName": "zpmckd.ext.controller.ListReportExt",
+            "sap.ui.generic.app": {
+              "ZPMI_CKD_CUST": {
+                "EntitySet": "ZPMI_CKD_CUST",
+                "Actions": {
+                  "poptavkaButton": {
+                    "id": "poptavkaButtonButton",
+                    "text": "Vytvořit poptávku",
+                    "press": "onPoptavkaCreate",
+                    "requiresSelection": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.ui.generic.app": {
+    "_version": "1.3.0",
+    "settings": {
+      "forceGlobalRefresh": false,
+      "objectPageHeaderType": "Dynamic",
+      "considerAnalyticalParameters": true,
+      "showDraftToggle": false
+    },
+    "pages": {
+      "ListReport|ZPMI_CKD_CUST": {
+        "entitySet": "ZPMI_CKD_CUST",
+        "component": {
+          "name": "sap.suite.ui.generic.template.ListReport",
+          "list": true,
+          "settings": {
+            "condensedTableLayout": true,
+            "smartVariantManagement": true,
+            "enableTableFilterInPageVariant": true,
+            "filterSettings": {
+              "dateSettings": {
+                "useDateRange": true
+              }
+            },
+            "tableSettings": {
+              "multiSelect": true,
+              "type": "GridTable"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  }
+}

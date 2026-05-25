@@ -1,0 +1,68 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:u="sap.ui.unified"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout"
+    xmlns:ndc="sap.ndc"
+>
+    <Dialog
+        id="PoznamkaDialog"
+        title="{materialNoteModel>/matnr} {materialNoteModel>/maktx}"
+        resizable="false"
+        beforeOpen="poznamkaDialogBeforeOpen"
+        afterClose="poznamkaDialogAfterClose"
+    >
+        <content>
+            <f:SimpleForm
+                editable="true"
+                layout="ResponsiveGridLayout"
+                labelSpanXL="3"
+                labelSpanL="3"
+                labelSpanM="3"
+                labelSpanS="12"
+                adjustLabelSpan="false"
+                emptySpanXL="2"
+                emptySpanL="2"
+                emptySpanM="2"
+                emptySpanS="0"
+                columnsXL="1"
+                columnsL="1"
+                columnsM="1"
+                singleContainerFullSize="false"
+            >
+                <f:content>
+                    <FeedInput
+                        post="onMatnrPoznamkaAccept"
+                        tooltip="Zadejte poznámku"
+                        maxLength="256"
+                        value="{materialNoteModel>/note}"
+                        class="sapUiSmallMarginTopBottom"
+                    />
+                    <List
+                        showSeparators="Inner"
+                        items="{path:'poznamkyModel>/results/', sorter: [{path:'timestamp', descending : true}]}"
+                    >
+                        <FeedListItem
+                            id="feedList"
+                            sender="{poznamkyModel>poster}"
+                            senderPress="onSenderPress"
+                            iconDensityAware="false"
+                            timestamp="{poznamkyModel>timestamp}"
+                            text="{poznamkyModel>note}"
+                            convertLinksToAnchorTags="All"
+                        />
+                    </List>
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <buttons>
+            <Button
+                icon="sap-icon://decline"
+                text="Zavřít"
+                tooltip="Zrušit"
+                press="onMatnrPoznamkaDecline"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

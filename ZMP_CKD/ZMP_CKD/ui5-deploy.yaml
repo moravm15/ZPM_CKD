@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+
+specVersion: "4.0"
+metadata:
+  name: zpmckd
+type: application
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        target:
+          destination: GW2
+          url: http://smbgw2cs.sap.skoda.vwg:443
+          client: '010'
+        app:
+          name: ZPM_CKD
+          description: ZPM_CKD
+          package: ZPM_CKD
+          transport: GW2K925707
+        exclude:
+          - /test/

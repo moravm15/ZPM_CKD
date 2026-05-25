@@ -1,0 +1,41 @@
+<core:FragmentDefinition
+    id="materialMenu"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Menu
+        itemSelected="onMenuAction"
+        id="matnrMenuTree"
+    >
+        <MenuItem
+            id="addMaterial"
+            key="addMaterial"
+            text="Přidat poznámku k materiálu"
+        />
+        <MenuItem
+            id="changeLimits"
+            key="changeLimits"
+            text="Zadání hladiny"
+        />
+        <MenuItem text="Roční výdej materiálu">
+            <items>
+                <MenuItem
+                    text="Roční výdej materiálu za materiál"
+                    id="yearlyMat"
+                    key="yearlyMat"
+                />
+                <MenuItem
+                    text="Roční výdej materiálu za sklad"
+                    id="yearlyMatLgort"
+                    key="yearlyMatLgort"
+                />
+            </items>
+        </MenuItem>
+        <MenuItem
+            id="info"
+            key="info"
+            text="Infozáznamy"
+        />
+        <!-- <MenuItem id="dmsDoc" key="dmsDoc" text="DMS Dokument"/> -->
+    </Menu>
+</core:FragmentDefinition>

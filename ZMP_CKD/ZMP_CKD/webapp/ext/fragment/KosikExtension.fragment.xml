@@ -1,0 +1,32 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar">
+    <Dialog id="kosikDialog" afterClose="kosikDialogAfterclose" title="Zjištění stavu objednání materiálu - Košík">
+        <smartTable:SmartTable
+            id="KosikSmartTable"
+            entitySet="ZPMI_CKD_KOSIK"
+            tableType="ResponsiveTable"
+            useExportToExcel="true"
+            showRowCount="true"
+            persistencyKey="SmartTableAnalytical_Explored"
+            enableAutoBinding="true"
+            class="sapUiResponsiveContentPadding"
+            useTablePersonalisation="true"
+            showTablePersonalisation="true"
+            placeToolbarInTable="true"
+            editable="false"
+            useVariantManagement="false"
+            beforeRebindTable="onBeforeRebind"
+        >
+            <Table id="masterTableId" growing="true"  growingThreshold="15">
+                <infoToolbar>
+                    <OverflowToolbar>
+                        <ToolbarSpacer />
+                    </OverflowToolbar>
+                </infoToolbar>
+                <columns />
+            </Table>
+        </smartTable:SmartTable>
+        <beginButton>
+            <Button text="Zavřít"  press="onKosikCloseDialog" />
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

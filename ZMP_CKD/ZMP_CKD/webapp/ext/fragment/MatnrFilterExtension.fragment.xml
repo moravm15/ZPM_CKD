@@ -1,0 +1,26 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:smartfilterbar="sap.ui.comp.smartfilterbar"
+    xmlns:smartMultiInput="sap.ui.comp.smartmultiinput"
+    xmlns:core="sap.ui.core"
+>
+<!-- 
+    <smartfilterbar:ControlConfiguration
+        id="matnrControlConfig"
+        groupId="_BASIC"
+        key="matnr"
+        label="{@i18n>material}"
+        visibleInAdvancedArea="true"
+        mandatory="notMandatory"
+    >
+        <smartfilterbar:customControl>
+            <smartMultiInput:SmartMultiInput
+                id="matnrSmartMultiInput"
+                entitySet="ZPMI_CKD_CUST"
+                supportRanges="true"
+                value="{matnr}"
+            />
+        </smartfilterbar:customControl>
+    </smartfilterbar:ControlConfiguration>
+    -->
+</core:FragmentDefinition>

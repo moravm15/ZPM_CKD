@@ -1,0 +1,11 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:u="sap.ui.unified" xmlns:f="sap.ui.layout.form" xmlns:l="sap.ui.layout" xmlns:ndc="sap.ndc">
+    <Dialog id="PoptavkaDialog" title="Tvorba poptávky" resizable="false" afterClose="poptavkaDialogAfterClose">
+        <content>
+            
+        </content>
+        <buttons>
+            <Button icon="sap-icon://accept" text="Potvrdit" tooltip="Potvrdit" press="onPoptavkaPoznamkaAccept" /> 
+            <Button icon="sap-icon://decline" text="Zrušit" tooltip="Zrušit" press="onPoptavkaPoznamkaDecline" />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

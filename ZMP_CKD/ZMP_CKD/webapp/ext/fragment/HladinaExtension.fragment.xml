@@ -1,0 +1,20 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:u="sap.ui.unified" xmlns:f="sap.ui.layout.form" xmlns:l="sap.ui.layout" xmlns:ndc="sap.ndc">
+    <Dialog id="HladinaDialog" title="Změna Hladiny" resizable="false" afterClose="hladinaDialogAfterClose">
+        <content>
+            <f:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="2" emptySpanL="2" emptySpanM="2" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
+                <f:content>
+                    <Label text="Materiál" />
+                    <Text text="{hladinaModel>/matnr} {hladinaModel>/maktx}" />
+                    <Label text="Objednací hladina" />
+                    <Input name="Objednací hladina" value="{hladinaModel>/minbe}" />
+                    <Label text="Maximální skladová zásoba" />
+					<Input name="Maximální skladová zásoba" value="{hladinaModel>/mabst}" />
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <buttons>
+            <Button icon="sap-icon://accept" text="Potvrdit" tooltip="Potvrdit" press="onHladinaAccept" />
+            <Button icon="sap-icon://decline" text="Zrušit" tooltip="Zrušit" press="onHladinaDecline" />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>
