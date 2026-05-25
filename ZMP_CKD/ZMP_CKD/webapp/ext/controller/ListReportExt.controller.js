@@ -245,31 +245,34 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                                 name: "zpmckd.ext.fragment.MatnrPoznamkaExtension"
                             });
                         }
-                        var oView = this.getView();
-
-                        this.getSelectedItemDetail(this.selectedObject.werks, this.selectedObject.lgort, this.selectedObject.matnr).then(function (oData) {
-                            oView.setModel(new JSONModel(oData), "materialNoteModel");
-                        })
                         this.oMatnrNoteDialog.then(function (oMatnrNoteDialog) {
                             oMatnrNoteDialog.open();
+                            oMatnrNoteDialog.setBusy(true);
+                            that.getSelectedItemDetail(that.selectedObject.werks, that.selectedObject.lgort, that.selectedObject.matnr).then(function (oData) {
+                                that.getView().setModel(new JSONModel(oData), "materialNoteModel");
+                                oMatnrNoteDialog.setBusy(false);
+                            })
                         });
 
                         break;
+
                     case "changeLimits":
                         if (!this.oHladinaDialog) {
                             this.oHladinaDialog = this.loadFragment({
                                 name: "zpmckd.ext.fragment.HladinaExtension"
                             });
                         }
-                        var oView = this.getView();
-                        this.getSelectedItemDetail(this.selectedObject.werks, this.selectedObject.lgort, this.selectedObject.matnr).then(function (oData) {
-                            oView.setModel(new JSONModel(oData), "hladinaModel");
-                        })
                         this.oHladinaDialog.then(function (oHladinaDialog) {
                             oHladinaDialog.open();
+                            oHladinaDialog.setBusy(true);
+                            that.getSelectedItemDetail(that.selectedObject.werks, that.selectedObject.lgort, that.selectedObject.matnr).then(function (oData) {
+                                that.getView().setModel(new JSONModel(oData), "hladinaModel");
+                                oHladinaDialog.setBusy(false);
+                            })
                         });
 
                         break;
+
                     case "yearlyMat":
                         this.isLgort = "N"
                         if (!this.oMatnrYearDialog) {
@@ -280,6 +283,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                         this.oMatnrYearDialog.then(function (oMatnrYearDialog) {
                             oMatnrYearDialog.open();
                         });
+
                         break;
 
                     case "yearlyMatLgort":
@@ -292,6 +296,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                         this.oMatnrYearDialog.then(function (oMatnrYearDialog) {
                             oMatnrYearDialog.open();
                         });
+
                         break;
 
                     case "info":
@@ -303,6 +308,8 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                         this.oInfoDialog.then(function (oInfoDialog) {
                             oInfoDialog.open();
                         });
+
+                        break;
                 }
             },
 
@@ -359,18 +366,14 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                     oModel.read("/ZPMI_CKD_NOTE", {
                         filters: aFilters,
                         success: function (oData, oResponse) {
-                            console.log(oData.results);
                             oView.setModel(new JSONModel(oData), "poznamkyModel")
-
                         }, error: function (oError) {
-                            oDialog.setBusy(false);
                             var oErrMsg = JSON.parse(oError.responseText).error.message.value;
                             if (oErrMsg) {
                                 sap.m.MessageBox.error(oErrMsg);
-                                console.log(oErrMsg);
+                                console.lerror(oErrMsg);
                             }
                         }
-
                     });
                 });
             },
@@ -385,48 +388,53 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                     mabst: oData.mabst,
                     minbe: oData.minbe,
                 };
-
-                var oDialog = this.getView().byId("HladinaDialog");
-                oDialog.setBusy(true);
-                return new Promise(function (resolve, reject) {
-                    oModel.callFunction("/toPostMinbe", {
-                        method: "POST",
-                        urlParameters: oParams,
-                        success: function (oResponse) {
-                            oDialog.setBusy(false);
-                            oDialog.close()
-                            resolve(oResponse);
-                        },
-                        error: function (oError) {
-                            oDialog.setBusy(false);
-                            var oErrMsg = JSON.parse(oError.responseText).error.message.value;
-                            if (oErrMsg) {
-                                if (oErrMsg == "Došlo k výjimce") {
-                                    that.onHladinaAccept();
-                                    oDialog.close()
-                                }
-                                else {
-                                    oDialog.close()
-                                    sap.m.MessageBox.error(oErrMsg)
+                this.oHladinaDialog.then(function (oDialog) {
+                    oDialog.setBusy(true);
+                    return new Promise(function (resolve, reject) {
+                        oModel.callFunction("/toPostMinbe", {
+                            method: "POST",
+                            urlParameters: oParams,
+                            success: function (oResponse) {
+                                oDialog.setBusy(false);
+                                oDialog.close()
+                                resolve(oResponse);
+                            },
+                            error: function (oError) {
+                                oDialog.setBusy(false);
+                                var oErrMsg = JSON.parse(oError.responseText).error.message.value;
+                                if (oErrMsg) {
+                                    if (oErrMsg == "Došlo k výjimce") {
+                                        oDialog.close()
+                                    }
+                                    else {
+                                        oDialog.close()
+                                        sap.m.MessageBox.error(oErrMsg)
+                                    }
                                 }
                             }
-                        }
+                        });
                     });
                 });
             },
 
             onMatnrPoznamkaAccept: function (oEvent) {
-                var oData = this.getView().getModel("materialNoteModel").getData();
-                var oParams = {
-                    note: oData.note,
-                    matnr: oData.matnr,
-                    lgort: oData.lgort,
-                    werks: oData.werks,
-                    timestamp: "102033"
-                };
-                this.postMaterialNote(oParams).then(function (oData) {
-                    that.readMaterialNotes();
-                })
+                var sValue = oEvent.getParameter("value");
+                if (!sValue) return;
+                this.oMatnrNoteDialog.then(function (oMatnrNoteDialog) {
+                    oMatnrNoteDialog.setBusy(true);
+                    var oData = that.getView().getModel("materialNoteModel").getData();
+                    var oParams = {
+                        note: sValue,
+                        matnr: oData.matnr,
+                        lgort: oData.lgort,
+                        werks: oData.werks,
+                        timestamp: "102033"
+                    };
+                    that.postMaterialNote(oParams).then(function (oResponse) {
+                        that.readMaterialNotes();
+                        oMatnrNoteDialog.setBusy(false);
+                    })
+                });
             },
 
             postMaterialNote: function (oParams) {
@@ -476,13 +484,14 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 var sKey = oEvent.getParameter("item").getKey();
                 switch (sKey) {
                     case "deleteEntry":
-                        //     var oView = this.getView();
-                        var oData = this.getView().getModel("materialNoteModel").getData();
-                        that.deleteNote(oData);
-                        var delayInMilliseconds = 200;
-                        setTimeout(function () {
-                            that.readMaterialNotes();
-                        }, delayInMilliseconds);
+                        this.oMatnrNoteDialog.then(function (oMatnrNoteDialog) {
+                            oMatnrNoteDialog.setBusy(true);
+                            var oData = that.getView().getModel("materialNoteModel").getData();
+                            that.deleteNote(oData).then(function (oResponse) {
+                                that.readMaterialNotes();
+                                oMatnrNoteDialog.setBusy(false);
+                            })
+                        });
                         break;
                 }
             },
@@ -493,12 +502,23 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 var parts = timeString.split(' ');
                 var timeWithoutMeridian = parts[0];
                 var timeWithoutColon = timeWithoutMeridian.replace(/:/g, "")
-                oModel.remove("/ZPMI_CKD_MCOM(matnr='" + oData.matnr + "',lgort='" + oData.lgort + "',werks='" + oData.werks + "',note='" + that.oNote + "',timestamp='" + timeWithoutColon + "')", {
-                    success: function (oData, oResponse) {
-                    }
+
+                return new Promise(function (resolve, reject) {
+                    oModel.remove("/ZPMI_CKD_MCOM(matnr='" + oData.matnr + "',lgort='" + oData.lgort + "',werks='" + oData.werks + "',note='" + that.oNote + "',timestamp='" + timeWithoutColon + "')", {
+                        success: function (oResponse) {
+                            resolve(oResponse);
+                        },
+                        error: function (oError) {
+                            var oErrMsg = JSON.parse(oError.responseText).error.message.value;
+                            if (oErrMsg) {
+                                sap.m.MessageBox.error(oErrMsg);
+                                console.log(oErrMsg);
+                            }
+                            reject(oError);
+                        }
+                    });
                 });
             },
-
 
             onPoptavkaCreate: function () {
                 var oData = this.getView().byId("zpmckd::sap.suite.ui.generic.template.ListReport.view.ListReport::ZPMI_CKD_CUST--responsiveTable").getSelectedItems();
@@ -562,13 +582,6 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 this.getView().byId("pobjDialog").close();
             },
 
-            hladinaDialogAfterClose: function (oEvent) {
-                this.getView().byId("HladinaDialog").destroy();
-                this.oHladinaDialog = null;
-
-                this.getSelectedItemDetail(this.selectedObject.werks, this.selectedObject.lgort, this.selectedObject.matnr).then(function (oData) { })
-            },
-
             onHladinaDecline: function () {
                 this.getView().byId("HladinaDialog").close();
             },
@@ -581,6 +594,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
             onMatnrPoznamkaDecline: function () {
                 this.getView().byId("PoznamkaDialog").close();
             },
+
             bdmngDialogAfterclose: function (oEvent) {
                 this.getView().byId("bdmngDialog").destroy();
                 this.oBdmngDialog = null;

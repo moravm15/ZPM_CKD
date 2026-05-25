@@ -1,7 +1,19 @@
-<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns:table="sap.ui.table" xmlns="sap.m" controllerName="zpmckd.ZPM_CKD.ext.controller.ListReportExt">
-    <table:Column id="FioriTools::ColumnExtension0" sortProperty="picture" filterProperty="picture">
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns:table="sap.ui.table"
+    xmlns="sap.m"
+    controllerName="zpmckd.ZPM_CKD.ext.controller.ListReportExt"
+>
+    <table:Column
+        id="FioriTools::ColumnExtension0"
+        sortProperty="picture"
+        filterProperty="picture"
+    >
         <table:label>
-            <Label id="FioriTools::ColumnExtension0Label" text="{/#ZPMI_CKD_CUSTType/picture/@sap:label}"/>
+            <Label
+                id="FioriTools::ColumnExtension0Label"
+                text="{/#ZPMI_CKD_CUSTType/picture/@sap:label}"
+            />
         </table:label>
         <table:template>
             <Image
@@ -26,73 +38,161 @@
             </Image>
         </table:template>
         <table:customData>
-            <core:CustomData key="p13nData" value="\{&quot;columnIndex&quot;: &quot;1&quot;, &quot;leadingProperty&quot;: &quot;picture&quot;, &quot;columnKey&quot;: &quot;ColumnExtension0&quot;, &quot;sortProperty&quot;: &quot;picture&quot;, &quot;filterProperty&quot;: &quot;picture&quot;}"/>
+            <core:CustomData
+                key="p13nData"
+                value="\{&quot;columnIndex&quot;: &quot;1&quot;, &quot;leadingProperty&quot;: &quot;picture&quot;, &quot;columnKey&quot;: &quot;ColumnExtension0&quot;, &quot;sortProperty&quot;: &quot;picture&quot;, &quot;filterProperty&quot;: &quot;picture&quot;}"
+            />
         </table:customData>
     </table:Column>
-    <table:Column id="FioriTools::ColumnExtension1" sortProperty="OBJEDNAVKA" filterProperty="OBJEDNAVKA">
+    <table:Column
+        id="FioriTools::ColumnExtension1"
+        sortProperty="OBJEDNAVKA"
+        filterProperty="OBJEDNAVKA"
+    >
         <table:label>
-            <Label id="FioriTools::ColumnExtension1Label" text="{/#ZPMI_CKD_CUSTType/OBJEDNAVKA/@sap:label}"/>
+            <Label
+                id="FioriTools::ColumnExtension1Label"
+                text="{/#ZPMI_CKD_CUSTType/OBJEDNAVKA/@sap:label}"
+            />
         </table:label>
         <table:template>
-            <Link id="FioriTools::ColumnExtension1Link" text="{OBJEDNAVKA}" press="onCallObjednavkaService"/>
+            <Link
+                id="FioriTools::ColumnExtension1Link"
+                text="{OBJEDNAVKA}"
+                press="onCallObjednavkaService"
+            />
         </table:template>
         <table:customData>
-            <core:CustomData key="p13nData" value="\{&quot;columnIndex&quot;: &quot;8&quot;, &quot;leadingProperty&quot;: &quot;OBJEDNAVKA&quot;, &quot;columnKey&quot;: &quot;ColumnExtension1&quot;, &quot;sortProperty&quot;: &quot;OBJEDNAVKA&quot;, &quot;filterProperty&quot;: &quot;OBJEDNAVKA&quot;}"/>
+            <core:CustomData
+                key="p13nData"
+                value="\{&quot;columnIndex&quot;: &quot;8&quot;, &quot;leadingProperty&quot;: &quot;OBJEDNAVKA&quot;, &quot;columnKey&quot;: &quot;ColumnExtension1&quot;, &quot;sortProperty&quot;: &quot;OBJEDNAVKA&quot;, &quot;filterProperty&quot;: &quot;OBJEDNAVKA&quot;}"
+            />
         </table:customData>
     </table:Column>
-    <table:Column id="FioriTools::ColumnExtension" sortProperty="SPOTREBA" filterProperty="SPOTREBA">
+    <table:Column
+        id="FioriTools::ColumnExtension"
+        sortProperty="SPOTREBA"
+        filterProperty="SPOTREBA"
+    >
         <table:label>
-            <Label id="FioriTools::ColumnExtensionLabel" text="{/#ZPMI_CKD_CUSTType/SPOTREBA/@sap:label}"/>
+            <Label
+                id="FioriTools::ColumnExtensionLabel"
+                text="{/#ZPMI_CKD_CUSTType/SPOTREBA/@sap:label}"
+            />
         </table:label>
         <table:template>
-            <Link id="FioriTools::ColumnExtensionLink" text="{SPOTREBA}" press="onCallSpotrebaService"/>
+            <Link
+                id="FioriTools::ColumnExtensionLink"
+                text="{SPOTREBA}"
+                press="onCallSpotrebaService"
+            />
         </table:template>
         <table:customData>
-            <core:CustomData key="p13nData" value="\{&quot;columnIndex&quot;: &quot;7&quot;, &quot;leadingProperty&quot;: &quot;SPOTREBA&quot;, &quot;columnKey&quot;: &quot;ColumnExtension&quot;, &quot;sortProperty&quot;: &quot;SPOTREBA&quot;, &quot;filterProperty&quot;: &quot;SPOTREBA&quot;}"/>
+            <core:CustomData
+                key="p13nData"
+                value="\{&quot;columnIndex&quot;: &quot;7&quot;, &quot;leadingProperty&quot;: &quot;SPOTREBA&quot;, &quot;columnKey&quot;: &quot;ColumnExtension&quot;, &quot;sortProperty&quot;: &quot;SPOTREBA&quot;, &quot;filterProperty&quot;: &quot;SPOTREBA&quot;}"
+            />
         </table:customData>
     </table:Column>
-    <table:Column id="FioriTools::ColumnExtension2" sortProperty="KOSIK" filterProperty="KOSIK">
+    <table:Column
+        id="FioriTools::ColumnExtension2"
+        sortProperty="KOSIK"
+        filterProperty="KOSIK"
+    >
         <table:label>
-            <Label id="FioriTools::ColumnExtension2Label" text="{/#ZPMI_CKD_CUSTType/KOSIK/@sap:label}"/>
+            <Label
+                id="FioriTools::ColumnExtension2Label"
+                text="{/#ZPMI_CKD_CUSTType/KOSIK/@sap:label}"
+            />
         </table:label>
         <table:template>
-            <Link id="FioriTools::ColumnExtension2Link" text="{KOSIK}" press="onCallKosikService"/>
+            <Link
+                id="FioriTools::ColumnExtension2Link"
+                text="{KOSIK}"
+                press="onCallKosikService"
+            />
         </table:template>
         <table:customData>
-            <core:CustomData key="p13nData" value="\{&quot;columnIndex&quot;: &quot;10&quot;, &quot;leadingProperty&quot;: &quot;KOSIK&quot;, &quot;columnKey&quot;: &quot;ColumnExtension2&quot;, &quot;sortProperty&quot;: &quot;KOSIK&quot;, &quot;filterProperty&quot;: &quot;KOSIK&quot;}"/>
+            <core:CustomData
+                key="p13nData"
+                value="\{&quot;columnIndex&quot;: &quot;10&quot;, &quot;leadingProperty&quot;: &quot;KOSIK&quot;, &quot;columnKey&quot;: &quot;ColumnExtension2&quot;, &quot;sortProperty&quot;: &quot;KOSIK&quot;, &quot;filterProperty&quot;: &quot;KOSIK&quot;}"
+            />
         </table:customData>
     </table:Column>
-    <table:Column id="FioriTools::ColumnExtension3" sortProperty="POBJ" filterProperty="POBJ">
+    <table:Column
+        id="FioriTools::ColumnExtension3"
+        sortProperty="POBJ"
+        filterProperty="POBJ"
+    >
         <table:label>
-            <Label id="FioriTools::ColumnExtension3Label" text="{/#ZPMI_CKD_CUSTType/POBJ/@sap:label}"/>
+            <Label
+                id="FioriTools::ColumnExtension3Label"
+                text="{/#ZPMI_CKD_CUSTType/POBJ/@sap:label}"
+            />
         </table:label>
         <table:template>
-            <Link id="FioriTools::ColumnExtension3Link" text="{POBJ}" press="onCallPobjService"/>
+            <Link
+                id="FioriTools::ColumnExtension3Link"
+                text="{POBJ}"
+                press="onCallPobjService"
+            />
         </table:template>
         <table:customData>
-            <core:CustomData key="p13nData" value="\{&quot;columnIndex&quot;: &quot;9&quot;, &quot;leadingProperty&quot;: &quot;POBJ&quot;, &quot;columnKey&quot;: &quot;ColumnExtension3&quot;, &quot;sortProperty&quot;: &quot;POBJ&quot;, &quot;filterProperty&quot;: &quot;POBJ&quot;}"/>
+            <core:CustomData
+                key="p13nData"
+                value="\{&quot;columnIndex&quot;: &quot;9&quot;, &quot;leadingProperty&quot;: &quot;POBJ&quot;, &quot;columnKey&quot;: &quot;ColumnExtension3&quot;, &quot;sortProperty&quot;: &quot;POBJ&quot;, &quot;filterProperty&quot;: &quot;POBJ&quot;}"
+            />
         </table:customData>
     </table:Column>
-    <table:Column id="FioriTools::ColumnExtension4" sortProperty="matnr" filterProperty="matnr">
+    <table:Column
+        id="FioriTools::ColumnExtension4"
+        sortProperty="matnr"
+        filterProperty="matnr"
+    >
         <table:label>
-            <Label id="FioriTools::ColumnExtension4Label" text="{/#ZPMI_CKD_CUSTType/matnr/@sap:label}"/>
+            <Label
+                id="FioriTools::ColumnExtension4Label"
+                text="{/#ZPMI_CKD_CUSTType/matnr/@sap:label}"
+            />
         </table:label>
         <table:template>
-            <Link id="matnrMenuGrid" text="{matnr}" press="onMatnrMenuPress" ariaHasPopup="Menu"/>
+            <Link
+                id="matnrMenuGrid"
+                text="{matnr}"
+                press="onMatnrMenuPress"
+                ariaHasPopup="Menu"
+            />
         </table:template>
         <table:customData>
-            <core:CustomData key="p13nData" value="\{&quot;columnIndex&quot;: &quot;2&quot;, &quot;leadingProperty&quot;: &quot;matnr&quot;, &quot;columnKey&quot;: &quot;ColumnExtension4&quot;, &quot;sortProperty&quot;: &quot;matnr&quot;, &quot;filterProperty&quot;: &quot;matnr&quot;}"/>
+            <core:CustomData
+                key="p13nData"
+                value="\{&quot;columnIndex&quot;: &quot;2&quot;, &quot;leadingProperty&quot;: &quot;matnr&quot;, &quot;columnKey&quot;: &quot;ColumnExtension4&quot;, &quot;sortProperty&quot;: &quot;matnr&quot;, &quot;filterProperty&quot;: &quot;matnr&quot;}"
+            />
         </table:customData>
     </table:Column>
-    <table:Column id="FioriTools::ColumnExtension5" sortProperty="bdmng" filterProperty="bdmng">
+    <table:Column
+        id="FioriTools::ColumnExtension5"
+        sortProperty="bdmng"
+        filterProperty="bdmng"
+    >
         <table:label>
-            <Label id="FioriTools::ColumnExtension5Label" text="{/#ZPMI_CKD_CUSTType/bdmng/@sap:label}"/>
+            <Label
+                id="FioriTools::ColumnExtension5Label"
+                text="{/#ZPMI_CKD_CUSTType/bdmng/@sap:label}"
+            />
         </table:label>
         <table:template>
-            <Link id="FioriTools::ColumnExtension5Link" text="{bdmng}" press="onCallBdmngService"/>
+            <Link
+                id="FioriTools::ColumnExtension5Link"
+                text="{bdmng}"
+                press="onCallBdmngService"
+            />
         </table:template>
         <table:customData>
-            <core:CustomData key="p13nData" value="\{&quot;columnIndex&quot;: &quot;11&quot;, &quot;leadingProperty&quot;: &quot;bdmng&quot;, &quot;columnKey&quot;: &quot;ColumnExtension5&quot;, &quot;sortProperty&quot;: &quot;bdmng&quot;, &quot;filterProperty&quot;: &quot;bdmng&quot;}"/>
+            <core:CustomData
+                key="p13nData"
+                value="\{&quot;columnIndex&quot;: &quot;11&quot;, &quot;leadingProperty&quot;: &quot;bdmng&quot;, &quot;columnKey&quot;: &quot;ColumnExtension5&quot;, &quot;sortProperty&quot;: &quot;bdmng&quot;, &quot;filterProperty&quot;: &quot;bdmng&quot;}"
+            />
         </table:customData>
     </table:Column>
 </core:FragmentDefinition>

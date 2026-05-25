@@ -1,5 +1,16 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar">
-    <Dialog id="infoDialog" afterOpen="afterInfoDialogOpen" title="Infozáznamy">
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:smartTable="sap.ui.comp.smarttable"
+    xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+>
+    <Dialog
+        id="infoDialog"
+        afterOpen="afterInfoDialogOpen"
+        draggable="true"
+        resizable="true"
+        title="Infozáznamy"
+    >
         <smartTable:SmartTable
             id="infoSmartTable"
             entitySet="ZPMI_CKD_EINA"
@@ -16,11 +27,12 @@
             useVariantManagement="false"
             beforeRebindTable="onBeforeRebindInfo"
             initiallyVisibleFields="infnr,aplfz,werks,ekorg,esokz,matnr,maktx,idnlf,lifnr,name1"
-        >
-
-        </smartTable:SmartTable>
+        />
         <beginButton>
-            <Button text="Zavřít"  press="onInfoCloseDialog" />
+            <Button
+                text="Zavřít"
+                press="onInfoCloseDialog"
+            />
         </beginButton>
     </Dialog>
 </core:FragmentDefinition>

@@ -1,5 +1,16 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar">
-    <Dialog id="bdmngDialog" afterClose="bdmngDialogAfterclose" title="Rezervace">
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:smartTable="sap.ui.comp.smarttable"
+    xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+>
+    <Dialog
+        id="bdmngDialog"
+        afterClose="bdmngDialogAfterclose"
+        draggable="true"
+        resizable="true"
+        title="Rezervace"
+    >
         <smartTable:SmartTable
             id="BdmngSmartTable"
             entitySet="ZPMI_CKD_RESB"
@@ -15,18 +26,12 @@
             editable="false"
             useVariantManagement="false"
             beforeRebindTable="onBeforeRebind"
-        >
-            <Table id="masterTableId" growing="true"  growingThreshold="15">
-                <infoToolbar>
-                    <OverflowToolbar>
-                        <ToolbarSpacer />
-                    </OverflowToolbar>
-                </infoToolbar>
-                <columns />
-            </Table>
-        </smartTable:SmartTable>
+        />
         <beginButton>
-            <Button text="Zavřít"  press="onBdmngCloseDialog" />
+            <Button
+                text="Zavřít"
+                press="onBdmngCloseDialog"
+            />
         </beginButton>
     </Dialog>
 </core:FragmentDefinition>

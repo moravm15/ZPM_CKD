@@ -1,5 +1,16 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar">
-    <Dialog id="objednavkaDialog" afterClose="objednavkaDialogAfterclose" title="Zjištění stavu objednání materiálu - Objednávka">
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:smartTable="sap.ui.comp.smarttable"
+    xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+>
+    <Dialog
+        id="objednavkaDialog"
+        afterClose="objednavkaDialogAfterclose"
+        draggable="true"
+        resizable="true"
+        title="Zjištění stavu objednání materiálu - Objednávka"
+    >
         <smartTable:SmartTable
             id="ObjednavkaSmartTable"
             entitySet="ZPMI_CKD_EKPO"
@@ -15,18 +26,12 @@
             editable="false"
             useVariantManagement="false"
             beforeRebindTable="onBeforeRebind"
-        >
-            <Table id="masterTableId" growing="true" growingThreshold="15">
-                <infoToolbar>
-                    <OverflowToolbar>
-                        <ToolbarSpacer />
-                    </OverflowToolbar>
-                </infoToolbar>
-                <columns />
-            </Table>
-        </smartTable:SmartTable>
+        />
         <beginButton>
-            <Button text="Zavřít" press="onObjednavkaCloseDialog" />
+            <Button
+                text="Zavřít"
+                press="onObjednavkaCloseDialog"
+            />
         </beginButton>
     </Dialog>
 </core:FragmentDefinition>

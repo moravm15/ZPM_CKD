@@ -26,60 +26,31 @@
     </edmx:Reference>
     <edmx:DataServices>
         <Schema Namespace="zpm_fiori_ckd_van.v1" xmlns="http://docs.oasis-open.org/odata/ns/edm">
-            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_BDMNGType/meins">
-                <Annotation Term="UI.Hidden"/>
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/mtart">
+                <Annotation Term="UI.HiddenFilter"/>
             </Annotations>
-            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_BDMNGType">
-                <Annotation Term="UI.LineItem">
-                    <Collection>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="matnr"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="werks"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="lgort"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="aufnr"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="ktext"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="vaplz"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="bdmng"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="mfrpn"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                    </Collection>
-                </Annotation>
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/dispo">
+                <Annotation Term="UI.HiddenFilter"/>
+            </Annotations>
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/dismm">
+                <Annotation Term="UI.HiddenFilter"/>
+            </Annotations>
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/verpr">
+                <Annotation Term="UI.HiddenFilter"/>
             </Annotations>
             <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/waers">
                 <Annotation Term="UI.HiddenFilter"/>
             </Annotations>
-            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/berid">
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/verpr_sp">
                 <Annotation Term="UI.HiddenFilter"/>
             </Annotations>
-            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/matnr">
-                <Annotation Term="UI.Hidden"/>
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/minbe">
+                <Annotation Term="UI.HiddenFilter"/>
+            </Annotations>
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/mabst">
+                <Annotation Term="UI.HiddenFilter"/>
             </Annotations>
             <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/meins">
-                <Annotation Term="UI.Hidden"/>
-            </Annotations>
-            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/lminb">
                 <Annotation Term="UI.Hidden"/>
             </Annotations>
             <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/bdmng">
@@ -100,10 +71,20 @@
             <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/criticality">
                 <Annotation Term="UI.Hidden"/>
             </Annotations>
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/qtyState">
+                <Annotation Term="UI.Hidden"/>
+            </Annotations>
             <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/picture">
+                <Annotation Term="UI.Hidden"/>
                 <Annotation Term="UI.IsImageURL"/>
             </Annotations>
             <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType">
+                <Annotation Term="UI.HeaderInfo">
+                    <Record>
+                        <PropertyValue Property="TypeName" String="Item"/>
+                        <PropertyValue Property="TypeNamePlural" String="Items"/>
+                    </Record>
+                </Annotation>
                 <Annotation Term="UI.LineItem">
                     <Collection>
                         <Record Type="UI.DataField">
@@ -115,6 +96,10 @@
                             <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
                         </Record>
                         <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="lgort"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
                             <PropertyValue Property="Value" Path="mtart"/>
                             <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
                         </Record>
@@ -122,8 +107,55 @@
                             <PropertyValue Property="Value" Path="dispo"/>
                             <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
                         </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_EKPOType/meins">
+                <Annotation Term="UI.Hidden"/>
+            </Annotations>
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_EKPOType/delivered_qty">
+                <Annotation Term="UI.Hidden"/>
+            </Annotations>
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_EKPOType/bprme">
+                <Annotation Term="UI.Hidden"/>
+            </Annotations>
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_EKPOType">
+                <Annotation Term="UI.LineItem">
+                    <Collection>
                         <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="lvorm"/>
+                            <PropertyValue Property="Value" Path="matnr"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="lgort"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="werks"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="ebeln"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="ebelp"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="menge"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="StillToBeDeliveredQuantity"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="knttp"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="ekgrp"/>
                             <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
                         </Record>
                     </Collection>
@@ -153,54 +185,6 @@
                         </Record>
                         <Record Type="UI.DataField">
                             <PropertyValue Property="Value" Path="quantity"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                    </Collection>
-                </Annotation>
-            </Annotations>
-            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_MINBEType/meins">
-                <Annotation Term="UI.Hidden"/>
-            </Annotations>
-            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_OBJType/meins">
-                <Annotation Term="UI.Hidden"/>
-            </Annotations>
-            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_OBJType">
-                <Annotation Term="UI.LineItem">
-                    <Collection>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="matnr"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="lgort"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="werks"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="ebeln"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="ebelp"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="menge"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="menge2"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="knttp"/>
-                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
-                        </Record>
-                        <Record Type="UI.DataField">
-                            <PropertyValue Property="Value" Path="ekgrp"/>
                             <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
                         </Record>
                     </Collection>
@@ -238,6 +222,51 @@
                         </Record>
                         <Record Type="UI.DataField">
                             <PropertyValue Property="Value" Path="ekgrp"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_RESBType/meins">
+                <Annotation Term="UI.Hidden"/>
+            </Annotations>
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_RESBType">
+                <Annotation Term="UI.LineItem">
+                    <Collection>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="matnr"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="werks"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="lgort"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="aufnr"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="ktext"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="vaplz"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="bdmng"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="mfrpn"/>
+                            <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="enmng"/>
                             <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
                         </Record>
                     </Collection>

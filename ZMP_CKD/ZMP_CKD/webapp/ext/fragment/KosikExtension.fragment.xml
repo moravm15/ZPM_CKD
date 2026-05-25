@@ -1,5 +1,16 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar">
-    <Dialog id="kosikDialog" afterClose="kosikDialogAfterclose" title="Zjištění stavu objednání materiálu - Košík">
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:smartTable="sap.ui.comp.smarttable"
+    xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+>
+    <Dialog
+        id="kosikDialog"
+        afterClose="kosikDialogAfterclose"
+        draggable="true"
+        resizable="true"
+        title="Zjištění stavu objednání materiálu - Košík"
+    >
         <smartTable:SmartTable
             id="KosikSmartTable"
             entitySet="ZPMI_CKD_KOSIK"
@@ -15,18 +26,12 @@
             editable="false"
             useVariantManagement="false"
             beforeRebindTable="onBeforeRebind"
-        >
-            <Table id="masterTableId" growing="true"  growingThreshold="15">
-                <infoToolbar>
-                    <OverflowToolbar>
-                        <ToolbarSpacer />
-                    </OverflowToolbar>
-                </infoToolbar>
-                <columns />
-            </Table>
-        </smartTable:SmartTable>
+        />
         <beginButton>
-            <Button text="Zavřít"  press="onKosikCloseDialog" />
+            <Button
+                text="Zavřít"
+                press="onKosikCloseDialog"
+            />
         </beginButton>
     </Dialog>
 </core:FragmentDefinition>

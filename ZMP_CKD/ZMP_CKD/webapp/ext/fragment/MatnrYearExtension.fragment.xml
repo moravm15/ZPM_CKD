@@ -1,5 +1,16 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar">
-    <Dialog id="matnrYearDialog" afterClose="matnrYearDialogAfterclose" title="{materialYear>/title}">
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:smartTable="sap.ui.comp.smarttable"
+    xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+>
+    <Dialog
+        id="matnrYearDialog"
+        afterClose="matnrYearDialogAfterclose"
+        draggable="true"
+        resizable="true"
+        title="{materialYear>/title}"
+    >
         <smartTable:SmartTable
             id="matnrYearSmartTable"
             entitySet="ZPMI_CKD_VYDEJ_MAT"
@@ -15,18 +26,12 @@
             editable="false"
             useVariantManagement="false"
             beforeRebindTable="onBeforeRebindYearMat"
-        >
-            <Table id="masterTableYearID" growing="true" growingThreshold="15">
-                <infoToolbar>
-                    <OverflowToolbar>
-                        <ToolbarSpacer />
-                    </OverflowToolbar>
-                </infoToolbar>
-                <columns />
-            </Table>
-        </smartTable:SmartTable>
+        />
         <beginButton>
-            <Button text="Zavřít" press="onMatnrYearCloseDialog" />
+            <Button
+                text="Zavřít"
+                press="onMatnrYearCloseDialog"
+            />
         </beginButton>
     </Dialog>
 </core:FragmentDefinition>

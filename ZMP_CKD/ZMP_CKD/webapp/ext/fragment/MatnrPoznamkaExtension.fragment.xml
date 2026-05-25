@@ -9,9 +9,11 @@
     <Dialog
         id="PoznamkaDialog"
         title="{materialNoteModel>/matnr} {materialNoteModel>/maktx}"
-        resizable="false"
+        resizable="true"
+        draggable="true"
         beforeOpen="poznamkaDialogBeforeOpen"
         afterClose="poznamkaDialogAfterClose"
+        busyIndicatorDelay="0"
     >
         <content>
             <f:SimpleForm

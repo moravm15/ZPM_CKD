@@ -1,8 +1,16 @@
 <core:FragmentDefinition
-        id="noteMenu"
-		xmlns="sap.m"
-		xmlns:core="sap.ui.core">
-	<Menu itemSelected="onNoteMenuAction" id="NoteMenuTree">
-		<MenuItem id="deleteEntry" key="deleteEntry" text="Smazat tento záznam"/>
-	</Menu>
+    id="noteMenu"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Menu
+        itemSelected="onNoteMenuAction"
+        id="NoteMenuTree"
+    >
+        <MenuItem
+            id="deleteEntry"
+            key="deleteEntry"
+            text="Smazat tento záznam"
+        />
+    </Menu>
 </core:FragmentDefinition>
