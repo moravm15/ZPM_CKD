@@ -11,14 +11,14 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
 
             onInit: function () {
                 that = this;
-                // Přímé napojení na SmartTable event jako spolehlivá alternativa k onBeforeRebindTable
                 this.getView().attachEventOnce("afterRendering", function () {
                     var aSmartTables = this.getView().findAggregatedObjects(true, function (o) {
                         return o.isA && o.isA("sap.ui.comp.smarttable.SmartTable");
                     });
                     if (aSmartTables.length > 0) {
                         this._oMainSmartTable = aSmartTables[0];
-                        aSmartTables[0].attachBeforeRebindTable(this._applyMatnrFilter, this);
+                        this._oMainSmartTable.getTable().setRowHeight(100);
+                        this._oMainSmartTable.attachBeforeRebindTable(this._applyMatnrFilter, this);
                     }
                 }, this);
             },
@@ -65,8 +65,6 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 aFilter.push(new Filter("werks", FilterOperator.EQ, this.selectedObject.werks));
                 this.oObjednavkaDialog.then(function (oObjednavkaDialog) {
                     oObjednavkaDialog.open();
-
-
                 });
             },
 
@@ -158,7 +156,6 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 binding.filters.push(new Filter("matnr", FilterOperator.EQ, this.selectedObject.matnr));
                 binding.filters.push(new Filter("lgort", FilterOperator.EQ, this.selectedObject.lgort));
                 binding.filters.push(new Filter("werks", FilterOperator.EQ, this.selectedObject.werks));
-
             },
 
             onBeforeRebindEkpo: function (oSource) {
@@ -172,7 +169,6 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 binding.filters.push(new Filter("matnr", FilterOperator.EQ, this.selectedObject.matnr));
                 binding.filters.push(new Filter("lgort", FilterOperator.EQ, this.selectedObject.lgort));
                 binding.filters.push(new Filter("werks", FilterOperator.EQ, this.selectedObject.werks));
-
             },
 
             onBeforeRebindYearMat: function (oSource) {
@@ -221,9 +217,9 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
             getSelectedItemDetail: function (sWerks, sLgort, sMatnr) {
                 var oModel = this.getView().getModel();
                 var aFilters = [];
-                aFilters.push(new Filter("werks", FilterOperator.EQ, sWerks));
-                aFilters.push(new Filter("lgort", FilterOperator.EQ, sLgort));
-                aFilters.push(new Filter("matnr", FilterOperator.EQ, sMatnr));
+                if (sWerks) aFilters.push(new Filter("werks", FilterOperator.EQ, sWerks));
+                if (sLgort) aFilters.push(new Filter("lgort", FilterOperator.EQ, sLgort));
+                if (sMatnr) aFilters.push(new Filter("matnr", FilterOperator.EQ, sMatnr));
                 return new Promise(function (resolve, reject) {
                     oModel.read("/ZPMI_CKD_CUST", {
                         filters: aFilters,
@@ -231,7 +227,6 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                             resolve(oData.results[0]);
                         }
                     });
-
                 });
             },
 
@@ -406,16 +401,8 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                                 oDialog.setBusy(false);
                                 var oErrMsg = JSON.parse(oError.responseText).error.message.value;
                                 if (oErrMsg) {
-                                    if (oErrMsg == "Došlo k výjimce") {
-                                        oDialog.close();
-                                        if (that._oMainSmartTable) {
-                                            that._oMainSmartTable.rebindTable();
-                                        }
-                                    }
-                                    else {
-                                        oDialog.close()
-                                        sap.m.MessageBox.error(oErrMsg)
-                                    }
+                                    oDialog.close()
+                                    sap.m.MessageBox.error(oErrMsg)
                                 }
                             }
                         });

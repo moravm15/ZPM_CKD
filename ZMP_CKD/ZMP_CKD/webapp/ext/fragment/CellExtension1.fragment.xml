@@ -5,7 +5,6 @@
 >
     <Image
         src="{picture}"
-        height="2rem"
         lazyLoading="true"
         decorative="false"
         densityAware="false"
