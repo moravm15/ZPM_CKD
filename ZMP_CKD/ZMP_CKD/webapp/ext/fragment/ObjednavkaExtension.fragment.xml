@@ -17,14 +17,9 @@
             tableType="ResponsiveTable"
             useExportToExcel="true"
             showRowCount="true"
-            persistencyKey="SmartTableAnalytical_Explored"
             enableAutoBinding="true"
             class="sapUiResponsiveContentPadding"
-            useTablePersonalisation="true"
-            showTablePersonalisation="true"
-            placeToolbarInTable="true"
             editable="false"
-            useVariantManagement="false"
             beforeRebindTable="onBeforeRebind"
         />
         <beginButton>

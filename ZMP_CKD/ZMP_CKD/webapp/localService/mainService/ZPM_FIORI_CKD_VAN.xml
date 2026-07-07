@@ -56,16 +56,16 @@
             <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/bdmng">
                 <Annotation Term="UI.Hidden"/>
             </Annotations>
-            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/SPOTREBA">
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/spotreba">
                 <Annotation Term="UI.Hidden"/>
             </Annotations>
-            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/OBJEDNAVKA">
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/objednavka">
                 <Annotation Term="UI.Hidden"/>
             </Annotations>
-            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/KOSIK">
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/kosik">
                 <Annotation Term="UI.Hidden"/>
             </Annotations>
-            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/POBJ">
+            <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/pobj">
                 <Annotation Term="UI.Hidden"/>
             </Annotations>
             <Annotations Target="cds_zpm_fiori_ckd.ZPMI_CKD_CUSTType/criticality">

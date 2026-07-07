@@ -22,19 +22,19 @@
         </detailBox>
     </Image>
     <Link
-        text="{OBJEDNAVKA}"
+        text="{objednavka}"
         press="onCallObjednavkaService"
     />
     <Link
-        text="{SPOTREBA}"
+        text="{spotreba}"
         press="onCallSpotrebaService"
     />
     <Link
-        text="{KOSIK}"
+        text="{kosik}"
         press="onCallKosikService"
     />
     <Link
-        text="{POBJ}"
+        text="{pobj}"
         press="onCallPobjService"
     />
     <Link

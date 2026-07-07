@@ -50,7 +50,14 @@
                             sender="{poznamkyModel>poster}"
                             senderPress="onSenderPress"
                             iconDensityAware="false"
-                            timestamp="{poznamkyModel>timestamp}"
+                            timestamp="{
+                                path: 'poznamkyModel>timestamp',
+                                type: 'sap.ui.model.odata.type.DateTime',
+                                formatOptions: {
+                                    style: 'medium',
+                                    UTC: false
+                                }
+                            }"
                             text="{poznamkyModel>note}"
                             convertLinksToAnchorTags="All"
                         />

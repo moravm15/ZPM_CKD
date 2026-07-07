@@ -21,6 +21,6 @@ builder:
           name: ZPM_CKD
           description: ZPM_CKD
           package: ZPM_CKD
-          transport: GW2K925707
+          transport: GW2K926538
         exclude:
           - /test/

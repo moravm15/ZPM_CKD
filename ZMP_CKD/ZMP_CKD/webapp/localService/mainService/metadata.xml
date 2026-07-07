@@ -112,10 +112,10 @@
                 <Property Name="verpr_sp" Type="Edm.Decimal" Precision="11" Scale="3" sap:unit="waers" sap:variable-scale="true" sap:label="Cena mat. bez druhu" sap:quickinfo="Cena materiálu bez druhu ocenění"/>
                 <Property Name="minbe" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="meins" sap:label="Objednací hladina"/>
                 <Property Name="mabst" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="meins" sap:label="Maximální zásoba" sap:quickinfo="Maximální skladová zásoba"/>
-                <Property Name="SPOTREBA" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="meins" sap:label="Spotřeba 12 měsíců" sap:quickinfo="Spotřeba za 12 měsíců"/>
-                <Property Name="OBJEDNAVKA" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="meins" sap:label="Otevřené mn. v objed" sap:quickinfo="Otevřené množství v objednávkách"/>
-                <Property Name="KOSIK" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="meins" sap:label="Košík" sap:quickinfo="Hodnota košíku"/>
-                <Property Name="POBJ" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="meins" sap:label="Stav POBJ"/>
+                <Property Name="spotreba" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="meins" sap:label="Spotřeba 12 měsíců" sap:quickinfo="Spotřeba za 12 měsíců"/>
+                <Property Name="objednavka" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="meins" sap:label="Otevřené mn. v objed" sap:quickinfo="Otevřené množství v objednávkách"/>
+                <Property Name="kosik" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="meins" sap:label="Košík" sap:quickinfo="Hodnota košíku"/>
+                <Property Name="pobj" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="meins" sap:label="Stav POBJ"/>
                 <Property Name="criticality" Type="Edm.Int32"/>
                 <Property Name="qtyState" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Status" sap:value-list="standard"/>
                 <Property Name="mfrnr" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Výrobce" sap:quickinfo="Číslo výrobce"/>

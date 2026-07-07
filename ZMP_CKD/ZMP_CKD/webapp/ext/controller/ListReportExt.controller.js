@@ -17,6 +17,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                         return o.isA && o.isA("sap.ui.comp.smarttable.SmartTable");
                     });
                     if (aSmartTables.length > 0) {
+                        this._oMainSmartTable = aSmartTables[0];
                         aSmartTables[0].attachBeforeRebindTable(this._applyMatnrFilter, this);
                     }
                 }, this);
@@ -227,7 +228,6 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                     oModel.read("/ZPMI_CKD_CUST", {
                         filters: aFilters,
                         success: function (oData, oResponse) {
-                            console.log(oData)
                             resolve(oData.results[0]);
                         }
                     });
@@ -371,7 +371,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                             var oErrMsg = JSON.parse(oError.responseText).error.message.value;
                             if (oErrMsg) {
                                 sap.m.MessageBox.error(oErrMsg);
-                                console.lerror(oErrMsg);
+                                console.error(oErrMsg);
                             }
                         }
                     });
@@ -396,7 +396,10 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                             urlParameters: oParams,
                             success: function (oResponse) {
                                 oDialog.setBusy(false);
-                                oDialog.close()
+                                oDialog.close();
+                                if (that._oMainSmartTable) {
+                                    that._oMainSmartTable.rebindTable();
+                                }
                                 resolve(oResponse);
                             },
                             error: function (oError) {
@@ -404,7 +407,10 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                                 var oErrMsg = JSON.parse(oError.responseText).error.message.value;
                                 if (oErrMsg) {
                                     if (oErrMsg == "Došlo k výjimce") {
-                                        oDialog.close()
+                                        oDialog.close();
+                                        if (that._oMainSmartTable) {
+                                            that._oMainSmartTable.rebindTable();
+                                        }
                                     }
                                     else {
                                         oDialog.close()
@@ -428,12 +434,33 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                         matnr: oData.matnr,
                         lgort: oData.lgort,
                         werks: oData.werks,
-                        timestamp: "102033"
+                        guid: "00000000-0000-0000-0000-000000000000"
                     };
                     that.postMaterialNote(oParams).then(function (oResponse) {
                         that.readMaterialNotes();
                         oMatnrNoteDialog.setBusy(false);
-                    })
+                    }).catch(function (oError) {
+                        oMatnrNoteDialog.setBusy(false);
+                    });
+                });
+            },
+
+            deleteNote: function (oData) {
+                var oModel = this.getView().getModel();
+                return new Promise(function (resolve, reject) {
+                    oModel.remove("/ZPMI_CKD_MCOM(matnr='" + oData.matnr + "',lgort='" + oData.lgort + "',werks='" + oData.werks + "',guid=guid'" + that.oSelectedNote.guid + "',note='')", {
+                        success: function (oResponse) {
+                            resolve(oResponse);
+                        },
+                        error: function (oError) {
+                            var oErrMsg = JSON.parse(oError.responseText).error.message.value;
+                            if (oErrMsg) {
+                                sap.m.MessageBox.error(oErrMsg);
+                                console.error(oErrMsg);
+                            }
+                            reject(oError);
+                        }
+                    });
                 });
             },
 
@@ -444,14 +471,13 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                         method: "POST",
                         urlParameters: oParams,
                         success: function (oResponse) {
-                            console.log(oResponse);
                             resolve(oResponse);
                         },
                         error: function (oError) {
                             var oErrMsg = JSON.parse(oError.responseText).error.message.value;
                             if (oErrMsg) {
                                 sap.m.MessageBox.error(oErrMsg);
-                                console.log(oErrMsg);
+                                console.error(oErrMsg);
                             }
                             reject(oError);
                         }
@@ -462,8 +488,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
 
             onSenderPress: function (oEvent) {
                 var oSource = oEvent.getSource();
-                this.oTimestamp = oSource.getTimestamp();
-                this.oNote = "s"
+                this.oSelectedNote = oSource.getBindingContext("poznamkyModel").getObject();
                 var oView = this.getView();
                 if (!this._oNoteMenuFragment) {
                     this._oNoteMenuFragment = Fragment.load({
@@ -490,48 +515,39 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                             that.deleteNote(oData).then(function (oResponse) {
                                 that.readMaterialNotes();
                                 oMatnrNoteDialog.setBusy(false);
-                            })
+                            }).catch(function (oError) {
+                                oMatnrNoteDialog.setBusy(false);
+                            });
                         });
                         break;
                 }
             },
 
-            deleteNote: function (oData) {
-                var oModel = this.getView().getModel();
-                var timeString = new Date(that.oTimestamp).toLocaleTimeString('cs-CZ')
-                var parts = timeString.split(' ');
-                var timeWithoutMeridian = parts[0];
-                var timeWithoutColon = timeWithoutMeridian.replace(/:/g, "")
-
-                return new Promise(function (resolve, reject) {
-                    oModel.remove("/ZPMI_CKD_MCOM(matnr='" + oData.matnr + "',lgort='" + oData.lgort + "',werks='" + oData.werks + "',note='" + that.oNote + "',timestamp='" + timeWithoutColon + "')", {
-                        success: function (oResponse) {
-                            resolve(oResponse);
-                        },
-                        error: function (oError) {
-                            var oErrMsg = JSON.parse(oError.responseText).error.message.value;
-                            if (oErrMsg) {
-                                sap.m.MessageBox.error(oErrMsg);
-                                console.log(oErrMsg);
-                            }
-                            reject(oError);
-                        }
-                    });
-                });
-            },
 
             onPoptavkaCreate: function () {
-                var oData = this.getView().byId("zpmckd::sap.suite.ui.generic.template.ListReport.view.ListReport::ZPMI_CKD_CUST--responsiveTable").getSelectedItems();
-                for (var i = 0; i < oData.length; i++) {
-                    var oBindingContext = oData[i].getBindingContext();
-                    var oBindingObject = oBindingContext.getObject();
-                    var data = "\n Č.mat: " + oBindingObject.matnr + " Množství: " + oBindingObject.lbstf + " Text: " + oBindingObject.maktx
-                    var bodyFiller = bodyFiller + data;
+                var oRespTable = this.getView().byId("zpmckd::sap.suite.ui.generic.template.ListReport.view.ListReport::ZPMI_CKD_CUST--responsiveTable");
+                var oGridTable = this.getView().byId("zpmckd::sap.suite.ui.generic.template.ListReport.view.ListReport::ZPMI_CKD_CUST--GridTable");
+                var aSelectedItems = [];
+                if (oRespTable) {
+                    aSelectedItems = oRespTable.getSelectedItems();
+                } else if (oGridTable) {
+                    var oPlugin = oGridTable.getPlugin("sap.ui.table.plugins.SelectionPlugin") ||
+                        oGridTable.getPlugin("sap.ui.table.plugins.MultiSelectionPlugin");
+                    var aIndices = oPlugin ? oPlugin.getSelectedIndices() : oGridTable.getSelectedIndices();
+                    aSelectedItems = aIndices.map(function (iIndex) {
+                        var oContext = oGridTable.getContextByIndex(iIndex);
+                        return { getBindingContext: function () { return oContext; } };
+                    });
                 }
-                var header = "Prosím o cenovou nabídku na materiály:\n"
-                var footer = "\n \nS pozdravem"
-                var body = bodyFiller.replace('undefined', '');
-                var mailToLink = "mailto:?subject=Cenová Nabídka&body=" + encodeURIComponent(header) + encodeURIComponent(body) + encodeURIComponent(footer);
+                var bodyFiller = "";
+                for (var i = 0; i < aSelectedItems.length; i++) {
+                    var oBindingContext = aSelectedItems[i].getBindingContext();
+                    var oBindingObject = oBindingContext.getObject();
+                    bodyFiller += "\n Č.mat: " + oBindingObject.matnr + " Množství: " + oBindingObject.minbe + " " + oBindingObject.meins + " Text: " + oBindingObject.maktx;
+                }
+                var header = "Prosím o cenovou nabídku na materiály:\n";
+                var footer = "\n \nS pozdravem,";
+                var mailToLink = "mailto:?subject=Cenová Nabídka&body=" + encodeURIComponent(header) + encodeURIComponent(bodyFiller) + encodeURIComponent(footer);
                 window.location.href = mailToLink;
 
             },

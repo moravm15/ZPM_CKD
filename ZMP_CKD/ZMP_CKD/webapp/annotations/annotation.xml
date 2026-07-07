@@ -37,6 +37,22 @@
                         <Record Type="UI.DataField">
                             <PropertyValue Property="Value" Path="mabst" />
                         </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="labst_zn" />
+                            <PropertyValue Property="Criticality" Path="labst_zn_crit" />
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="labst_zi" />
+                            <PropertyValue Property="Criticality" Path="labst_zi_crit" />
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="labst_ze" />
+                            <PropertyValue Property="Criticality" Path="labst_ze_crit" />
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="labst_zr" />
+                            <PropertyValue Property="Criticality" Path="labst_zr_crit" />
+                        </Record>
                     </Collection>
                     <Annotation Term="UI.Criticality" Path="criticality" />
                 </Annotation>
