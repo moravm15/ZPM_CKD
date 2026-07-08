@@ -1,49 +1,16 @@
-<core:FragmentDefinition
-    xmlns:core="sap.ui.core"
-    xmlns="sap.m"
-    controllerName="zpmckd.ZPM_CKD.ext.controller.ListReportExt"
->
-    <Image
-        src="{picture}"
-        lazyLoading="true"
-        decorative="false"
-        densityAware="false"
-    >
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m" controllerName="zpmckd.ZPM_CKD.ext.controller.ListReportExt">
+    <Image src="{picture}" lazyLoading="true" decorative="false" densityAware="false">
         <detailBox>
             <LightBox>
-                <LightBoxItem
-                    imageSrc="{picture}"
-                    alt=""
-                    title=""
-                    subtitle=""
-                />
+                <LightBoxItem imageSrc="{picture}" alt="" title="" subtitle=""/>
             </LightBox>
         </detailBox>
     </Image>
-    <Link
-        text="{objednavka}"
-        press="onCallObjednavkaService"
-    />
-    <Link
-        text="{spotreba}"
-        press="onCallSpotrebaService"
-    />
-    <Link
-        text="{kosik}"
-        press="onCallKosikService"
-    />
-    <Link
-        text="{pobj}"
-        press="onCallPobjService"
-    />
-    <Link
-        text="{matnr}"
-        id="matnrMenu"
-        press="onMatnrMenuPress"
-        ariaHasPopup="Menu"
-    />
-    <Link
-        text="{bdmng}"
-        press="onCallBdmngService"
-    />
+    <Link text="{objednavka}" press="onCallObjednavkaService"/>
+    <Link text="{spotreba}" press="onCallSpotrebaService"/>
+    <Link text="{kosik}" press="onCallKosikService"/>
+    <Link text="{pobj}" press="onCallPobjService"/>
+    <Link text="{matnr}" id="matnrMenu" press="onMatnrMenuPress" ariaHasPopup="Menu"/>
+    <Link text="{bdmng}" press="onCallBdmngService"/>
+    <Text id="Text" text="Placeholder"/>
 </core:FragmentDefinition>

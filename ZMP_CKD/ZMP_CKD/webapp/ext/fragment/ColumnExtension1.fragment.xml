@@ -195,4 +195,34 @@
             />
         </table:customData>
     </table:Column>
+
+    <table:Column
+        id="FioriTools::ColumnExtension6"
+        sortProperty="noteCnt"
+        filterProperty="noteCnt"
+    >
+        <table:label>
+            <Label
+                id="FioriTools::ColumnExtension6Label"
+                text="Poznámky"
+            />
+        </table:label>
+        <table:template>
+            <Button
+                id="FioriTools::ColumnExtension6Link"
+                icon="sap-icon://notes"
+                text="{noteCnt}"
+                type="Transparent"
+                tooltip="Zobrazit poznámky"
+                press="onOpenNotes"
+                visible="{= ${noteCnt} > 0 }"
+            />
+        </table:template>
+        <table:customData>
+            <core:CustomData
+                key="p13nData"
+                value="\{&quot;columnIndex&quot;: &quot;12&quot;, &quot;leadingProperty&quot;: &quot;noteCnt&quot;, &quot;columnKey&quot;: &quot;ColumnExtension6&quot;, &quot;sortProperty&quot;: &quot;noteCnt&quot;, &quot;filterProperty&quot;: &quot;noteCnt&quot;}"
+            />
+        </table:customData>
+    </table:Column>
 </core:FragmentDefinition>

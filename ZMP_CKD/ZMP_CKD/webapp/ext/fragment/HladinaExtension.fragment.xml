@@ -5,10 +5,13 @@
     xmlns:f="sap.ui.layout.form"
     xmlns:l="sap.ui.layout"
     xmlns:ndc="sap.ndc"
+    xmlns:smartTable="sap.ui.comp.smarttable"
+    xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
 >
     <Dialog
         id="HladinaDialog"
         title="Změna Hladiny"
+        afterClose="mdmaHistDialogAfterclose"
         resizable="true"
         draggable="true"
         busyIndicatorDelay="0"
@@ -45,6 +48,24 @@
                         name="Maximální skladová zásoba"
                         type="Number"
                         value="{hladinaModel>/mabst}"
+                    />
+                    <Label text="Historie" />
+                    <smartTable:SmartTable
+                        id="MdmaHistTable"
+                        entitySet="ZPMI_CKD_MDMA_HIST"
+                        tableType="ResponsiveTable"
+                        useExportToExcel="true"
+                        showRowCount="true"
+                        persistencyKey="SmartTableAnalytical_Explored"
+                        initiallyVisibleFields="ChangedField,OldValue,NewValue,ChangeDate,ChangeTime,ChangedBy"
+                        enableAutoBinding="true"
+                        class="sapUiResponsiveContentPadding"
+                        useTablePersonalisation="true"
+                        showTablePersonalisation="true"
+                        placeToolbarInTable="true"
+                        editable="false"
+                        useVariantManagement="false"
+                        beforeRebindTable="onBeforeMdmaHistTableRebind"
                     />
                 </f:content>
             </f:SimpleForm>

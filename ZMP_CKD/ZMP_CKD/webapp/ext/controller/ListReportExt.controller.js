@@ -18,6 +18,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                     if (aSmartTables.length > 0) {
                         this._oMainSmartTable = aSmartTables[0];
                         this._oMainSmartTable.getTable().setRowHeight(100);
+                        this._oMainSmartTable.getTable().setColumnHeaderHeight(20)
                         this._oMainSmartTable.attachBeforeRebindTable(this._applyMatnrFilter, this);
                     }
                 }, this);
@@ -69,31 +70,18 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
             },
 
             onCallSpotrebaService: function (oEvent) {
-
                 this.selectedObject = oEvent.getSource().getBindingContext().getObject();
                 if (!this.oSpotrebaDialog) {
                     this.oSpotrebaDialog = this.loadFragment({
                         name: "zpmckd.ext.fragment.SpotrebaExtension"
                     });
                 }
-
-                var aFilter = [];
-
-                aFilter.push(new Filter("matnr", FilterOperator.EQ, this.selectedObject.matnr));
-                aFilter.push(new Filter("lgort", FilterOperator.EQ, this.selectedObject.lgort));
-                aFilter.push(new Filter("werks", FilterOperator.EQ, this.selectedObject.werks));
-                // binding.filters.push(new Filter("dispo", FilterOperator.EQ, this.selectedObject.dispo));
-                // binding.filters.push(new Filter("lvorm", FilterOperator.EQ, this.selectedObject.lvorm));
-                // binding.filters.push(new Filter("mtart", FilterOperator.EQ, this.selectedObject.mtart));
                 this.oSpotrebaDialog.then(function (oSpotrebaDialog) {
                     oSpotrebaDialog.open();
-
-
                 });
             },
 
             onCallKosikService: function (oEvent) {
-
                 this.selectedObject = oEvent.getSource().getBindingContext().getObject();
                 if (!this.oKosikDialog) {
                     this.oKosikDialog = this.loadFragment({
@@ -101,15 +89,8 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                     });
                 }
 
-                var aFilter = [];
-
-                aFilter.push(new Filter("matnr", FilterOperator.EQ, this.selectedObject.matnr));
-                aFilter.push(new Filter("lgort", FilterOperator.EQ, this.selectedObject.lgort));
-                aFilter.push(new Filter("werks", FilterOperator.EQ, this.selectedObject.werks));
                 this.oKosikDialog.then(function (oKosikDialog) {
                     oKosikDialog.open();
-
-
                 });
             },
 
@@ -121,15 +102,8 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                     });
                 }
 
-                var aFilter = [];
-
-                aFilter.push(new Filter("matnr", FilterOperator.EQ, this.selectedObject.matnr));
-                aFilter.push(new Filter("lgort", FilterOperator.EQ, this.selectedObject.lgort));
-                aFilter.push(new Filter("werks", FilterOperator.EQ, this.selectedObject.werks));
                 this.oPobjDialog.then(function (oPobjDialog) {
                     oPobjDialog.open();
-
-
                 });
             },
 
@@ -140,12 +114,6 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                         name: "zpmckd.ext.fragment.BdmngExtension"
                     });
                 }
-
-                var aFilter = [];
-
-                aFilter.push(new Filter("matnr", FilterOperator.EQ, this.selectedObject.matnr));
-                aFilter.push(new Filter("lgort", FilterOperator.EQ, this.selectedObject.lgort));
-                aFilter.push(new Filter("werks", FilterOperator.EQ, this.selectedObject.werks));
                 this.oBdmngDialog.then(function (oBdmngDialog) {
                     oBdmngDialog.open();
                 });
@@ -162,6 +130,13 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 var binding = oSource.getParameter("bindingParams");
                 binding.filters.push(new Filter("matnr", FilterOperator.EQ, this.selectedObject.matnr));
                 binding.filters.push(new Filter("lgort", FilterOperator.EQ, this.selectedObject.lgort));
+            },
+
+            onBeforeMdmaHistTableRebind: function (oSource) {
+                var binding = oSource.getParameter("bindingParams");
+                binding.filters.push(new Filter("Plant", FilterOperator.EQ, this.selectedObject.werks));
+                binding.filters.push(new Filter("Material", FilterOperator.EQ, this.selectedObject.matnr));
+                binding.filters.push(new Filter("StorageLocation", FilterOperator.EQ, this.selectedObject.lgort));
             },
 
             onBeforeRebindExtended: function (oSource) {
@@ -392,9 +367,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                             success: function (oResponse) {
                                 oDialog.setBusy(false);
                                 oDialog.close();
-                                if (that._oMainSmartTable) {
-                                    that._oMainSmartTable.rebindTable();
-                                }
+                                if (that._oMainSmartTable) that._oMainSmartTable.rebindTable();
                                 resolve(oResponse);
                             },
                             error: function (oError) {
@@ -425,6 +398,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                     };
                     that.postMaterialNote(oParams).then(function (oResponse) {
                         that.readMaterialNotes();
+                        if (that._oMainSmartTable) that._oMainSmartTable.rebindTable();
                         oMatnrNoteDialog.setBusy(false);
                     }).catch(function (oError) {
                         oMatnrNoteDialog.setBusy(false);
@@ -501,6 +475,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                             var oData = that.getView().getModel("materialNoteModel").getData();
                             that.deleteNote(oData).then(function (oResponse) {
                                 that.readMaterialNotes();
+                                if (that._oMainSmartTable) that._oMainSmartTable.rebindTable();
                                 oMatnrNoteDialog.setBusy(false);
                             }).catch(function (oError) {
                                 oMatnrNoteDialog.setBusy(false);
@@ -609,6 +584,28 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
 
             onBeforeRebindTable: function (oEvent) {
                 this._applyMatnrFilter(oEvent);
+            },
+
+            mdmaHistDialogAfterclose: function (oEvent) {
+                this.getView().byId("HladinaDialog").destroy();
+                this.oHladinaDialog = null;
+            },
+
+            onOpenNotes: function (oEvent) {
+                this.selectedObject = oEvent.getSource().getBindingContext().getObject();
+                if (!this.oMatnrNoteDialog) {
+                    this.oMatnrNoteDialog = this.loadFragment({
+                        name: "zpmckd.ext.fragment.MatnrPoznamkaExtension"
+                    });
+                }
+                this.oMatnrNoteDialog.then(function (oMatnrNoteDialog) {
+                    oMatnrNoteDialog.open();
+                    oMatnrNoteDialog.setBusy(true);
+                    that.getSelectedItemDetail(that.selectedObject.werks, that.selectedObject.lgort, that.selectedObject.matnr).then(function (oData) {
+                        that.getView().setModel(new JSONModel(oData), "materialNoteModel");
+                        oMatnrNoteDialog.setBusy(false);
+                    })
+                });
             }
 
         };
