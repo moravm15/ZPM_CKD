@@ -137,6 +137,13 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 binding.filters.push(new Filter("Plant", FilterOperator.EQ, this.selectedObject.werks));
                 binding.filters.push(new Filter("Material", FilterOperator.EQ, this.selectedObject.matnr));
                 binding.filters.push(new Filter("StorageLocation", FilterOperator.EQ, this.selectedObject.lgort));
+                if (!binding.sorter.length) {
+                    binding.sorter.push(
+                        new Sorter("ChangeDate", true),
+                        new Sorter("ChangeTime", true),
+                        new Sorter("ChangeNumber", true)
+                    );
+                }
             },
 
             onBeforeRebindExtended: function (oSource) {
@@ -444,7 +451,62 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                         }
                     });
                 });
+            },
 
+            onScrapSelect: function (oEvent) {
+                var oCheckBox = oEvent.getSource();
+                var oRowContext = oCheckBox.getBindingContext();
+                var sWerks = oRowContext.getProperty("werks");
+                var sMatnr = oRowContext.getProperty("matnr");
+                var sLgort = oRowContext.getProperty("lgort");
+
+                var oModel = oCheckBox.getModel(); // or this.getView().getModel("scrapModel")
+
+                var sPath = oModel.createKey("/ZPMI_CKD_MARD", {
+                    Werks: sWerks,
+                    Matnr: sMatnr,
+                    Lgort: sLgort
+                });
+
+                oCheckBox.setBusy(true);
+                oModel.read(sPath, {
+                    success: function (oData) {
+                        oModel.update(sPath, {
+                            Scrap: !oData.Scrap
+                        }, {
+                            success: function () {
+                                oCheckBox.setBusy(false);
+                                sap.m.MessageToast.show("Příznak Ke šrotaci byl úspěšně aktualizován");
+                            },
+                            error: function (oError) {
+                                oCheckBox.setBusy(false);
+                                sap.m.MessageBox.error("Aktualizace příznaku Ke šrotaci selhala");
+                            }
+                        });
+                    },
+                    error: function (oError) {
+                        if (oError.statusCode === "404" || oError.statusCode === 404) {
+                            oModel.create("/ZPMI_CKD_MARD", {
+                                Werks: sWerks,
+                                Matnr: sMatnr,
+                                Lgort: sLgort,
+                                Scrap: true
+                            }, {
+                                success: function () {
+                                    oCheckBox.setBusy(false);
+                                    sap.m.MessageToast.show("Příznak Ke šrotaci byl úspěšně vytvořen");
+                                },
+                                error: function (oCreateError) {
+                                    oCheckBox.setBusy(false);
+                                    sap.m.MessageBox.error("Vytvoření příznaku Ke šrotaci selhala");
+                                }
+                            });
+                        } else {
+                            oCheckBox.setBusy(false);
+                            sap.m.MessageBox.error("Čtení příznaku Ke šrotaci selhalo");
+                        }
+                    }
+                });
             },
 
             onSenderPress: function (oEvent) {
@@ -485,11 +547,11 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 }
             },
 
-
             onPoptavkaCreate: function () {
                 var oRespTable = this.getView().byId("zpmckd::sap.suite.ui.generic.template.ListReport.view.ListReport::ZPMI_CKD_CUST--responsiveTable");
                 var oGridTable = this.getView().byId("zpmckd::sap.suite.ui.generic.template.ListReport.view.ListReport::ZPMI_CKD_CUST--GridTable");
                 var aSelectedItems = [];
+
                 if (oRespTable) {
                     aSelectedItems = oRespTable.getSelectedItems();
                 } else if (oGridTable) {
@@ -501,17 +563,85 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                         return { getBindingContext: function () { return oContext; } };
                     });
                 }
-                var bodyFiller = "";
-                for (var i = 0; i < aSelectedItems.length; i++) {
-                    var oBindingContext = aSelectedItems[i].getBindingContext();
-                    var oBindingObject = oBindingContext.getObject();
-                    bodyFiller += "\n Č.mat: " + oBindingObject.matnr + " Množství: " + oBindingObject.minbe + " " + oBindingObject.meins + " Text: " + oBindingObject.maktx;
-                }
-                var header = "Prosím o cenovou nabídku na materiály:\n";
-                var footer = "\n \nS pozdravem,";
-                var mailToLink = "mailto:?subject=Cenová Nabídka&body=" + encodeURIComponent(header) + encodeURIComponent(bodyFiller) + encodeURIComponent(footer);
-                window.location.href = mailToLink;
 
+                // Ošetření HTML znaků v datech (např. "<" v názvu materiálu)
+                var fnEscape = function (sValue) {
+                    return String(sValue === undefined || sValue === null ? "" : sValue)
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;");
+                };
+
+                var sRowsHtml = "";
+                for (var i = 0; i < aSelectedItems.length; i++) {
+                    var oBindingObject = aSelectedItems[i].getBindingContext().getObject();
+
+                    // Počet k poptání = maximální hladina - volně použitelný počet
+                    // POZOR: uprav názvy polí podle vaší OData entity (mabst, labst, cdv)!
+                    var fMax = parseFloat(oBindingObject.mabst) || 0;
+                    var fFree = parseFloat(oBindingObject.labst) || 0;
+                    var fPocet = Math.max(fMax - fFree, 0);
+
+                    sRowsHtml +=
+                        "<tr>" +
+                        "<td style=\"padding:4px 16px 4px 0;vertical-align:top;\">" + fnEscape(oBindingObject.matnr) + "</td>" +
+                        "<td style=\"padding:4px 16px 4px 0;vertical-align:top;\">" + fnEscape(oBindingObject.maktx) + "</td>" +
+                        "<td style=\"padding:4px 16px 4px 0;vertical-align:top;\">" + fnEscape(oBindingObject.cdv) + "</td>" +
+                        "<td style=\"padding:4px 16px 4px 0;vertical-align:top;\">" + fPocet + " " + fnEscape(oBindingObject.meins) + "</td>" +
+                        "</tr>";
+                }
+
+                var sHtmlBody =
+                    "<html><body style=\"font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#000;\">" +
+                    "<p>Dobrý den,</p>" +
+                    "<p>prosím o nezávaznou cenovou nabídku na následující materiál:</p>" +
+                    "<table style=\"border-collapse:collapse;font-family:Calibri,Arial,sans-serif;font-size:11pt;\">" +
+                    "<tr>" +
+                    "<th align=\"left\" style=\"padding:4px 16px 4px 0;\">SAP</th>" +
+                    "<th align=\"left\" style=\"padding:4px 16px 4px 0;\">Název materiálu</th>" +
+                    "<th align=\"left\" style=\"padding:4px 16px 4px 0;\">ČDV</th>" +
+                    "<th align=\"left\" style=\"padding:4px 16px 4px 0;\">Počet</th>" +
+                    "</tr>" +
+                    sRowsHtml +
+                    "</table>" +
+                    "<p><b>Cenu</b> prosím <b><span style=\"color:red;\">včetně dopravy a balného</span></b> do závodu ŠKODA AUTO a.s.<br/>" +
+                    "Dále prosím uveďte <b><span style=\"color:red;\">termín dodání</span></b>.<br/>" +
+                    "V případě, že tyto náklady do cenové nabídky neuvedete a vystavíte fakturu s dopravným, " +
+                    "nebude Vám toto dodatečně proplaceno.</p>" +
+                    "<p style=\"font-size:9pt;\">Upozorňujeme na to, že předložením Vaší nabídky nevzniká ŠKODA AUTO a.s. " +
+                    "žádná povinnost k uzavření smlouvy.</p>" +
+                    "<p>Děkuji předem za nabídku a přeji hezký den.</p>" +
+                    "<p>S pozdravem</p>" +
+                    "</body></html>";
+
+                // Base64 s podporou UTF-8 (kvůli diakritice)
+                var fnB64 = function (sText) {
+                    return btoa(unescape(encodeURIComponent(sText)));
+                };
+
+                // Zalomení base64 na řádky po 76 znacích (dle RFC 2045)
+                var sBodyB64 = fnB64(sHtmlBody).replace(/(.{76})/g, "$1\r\n");
+
+                // X-Unsent: 1 zajistí, že Outlook otevře soubor jako rozepsaný koncept
+                var sEml =
+                    "To: \r\n" +
+                    "Subject: =?utf-8?B?" + fnB64("Nezávazná cenová nabídka") + "?=\r\n" +
+                    "X-Unsent: 1\r\n" +
+                    "MIME-Version: 1.0\r\n" +
+                    "Content-Type: text/html; charset=utf-8\r\n" +
+                    "Content-Transfer-Encoding: base64\r\n" +
+                    "\r\n" +
+                    sBodyB64;
+
+                var oBlob = new Blob([sEml], { type: "message/rfc822" });
+                var sUrl = URL.createObjectURL(oBlob);
+                var oLink = document.createElement("a");
+                oLink.href = sUrl;
+                oLink.download = "Poptavka.eml";
+                document.body.appendChild(oLink);
+                oLink.click();
+                document.body.removeChild(oLink);
+                URL.revokeObjectURL(sUrl);
             },
 
             poptavkaDialogAfterClose: function (oEvent) {
