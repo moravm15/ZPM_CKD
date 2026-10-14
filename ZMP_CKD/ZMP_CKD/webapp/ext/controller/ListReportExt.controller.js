@@ -24,6 +24,79 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 }, this);
             },
 
+            // Předvyplnění závodu (WRK) a skladu (LAG) z uživatelských parametrů - jen pro standardní variantu
+            onInitSmartFilterBarExtension: function (oEvent) {
+                console.log("onInitSmartFilterBarExtension")
+                var oSmartFilterBar = oEvent.getSource();
+                this._applyUserDefaults(oSmartFilterBar);
+                oSmartFilterBar.attachAfterVariantLoad(function () {
+                    this._applyUserDefaults(oSmartFilterBar);
+                }, this);
+            },
+
+            _readUserDefaults: function () {
+                if (!this._oUserDefaultsPromise) {
+                    var oModel = this.getView().getModel();
+                    this._oUserDefaultsPromise = new Promise(function (resolve) {
+                        oModel.read("/ZPMI_CKD_USER_DEFAULTS", {
+                            success: function (oData) {
+                                var mDefaults = {};
+                                // Jeden řádek za uživatele: Plant (WRK), StorageLocation (LAG)
+                                var oRow = (oData.results || [])[0];
+                                if (oRow) {
+                                    if (oRow.Plant && oRow.PlantIsValid) { mDefaults.werks = oRow.Plant; }
+                                    if (oRow.StorageLocation && oRow.IsValid) { mDefaults.lgort = oRow.StorageLocation; }
+                                }
+                                resolve(mDefaults);
+                            },
+                            error: function () {
+                                resolve({});
+                            }
+                        });
+                    });
+                }
+                return this._oUserDefaultsPromise;
+            },
+
+            _isStandardVariant: function (oSmartFilterBar) {
+                var oVariant = oSmartFilterBar.getSmartVariant && oSmartFilterBar.getSmartVariant();
+                if (!oVariant) { return true; }
+                var sCurrent = oVariant.getCurrentVariantId();
+                var sStandard = oVariant.getStandardVariantKey ? oVariant.getStandardVariantKey() : "*standard*";
+                return !sCurrent || sCurrent === sStandard;
+            },
+
+            _applyUserDefaults: function (oSmartFilterBar) {
+                if (!this._isStandardVariant(oSmartFilterBar)) { return; }
+
+                this._readUserDefaults().then(function (mDefaults) {
+                    // Varianta se mezitím mohla změnit
+                    if (!this._isStandardVariant(oSmartFilterBar)) { return; }
+
+                    var oCurrent = oSmartFilterBar.getFilterData() || {};
+                    var oNewData = {};
+                    Object.keys(mDefaults).forEach(function (sKey) {
+                        var oControl = oSmartFilterBar.getControlByKey(sKey);
+                        if (!oControl) { return; }
+                        var vValue = oCurrent[sKey];
+                        var bFilled = vValue && (typeof vValue === "string" ||
+                            (vValue.items && vValue.items.length) || (vValue.ranges && vValue.ranges.length) || vValue.value);
+                        if (bFilled) { return; }
+                        // MultiInput potřebuje token (items), jinak by hodnotu nepoznal a pole zůstalo chybné
+                        oNewData[sKey] = oControl.getTokens ? { items: [{ key: mDefaults[sKey] }] } : mDefaults[sKey];
+                    });
+                    if (!Object.keys(oNewData).length) { return; }
+
+                    oSmartFilterBar.setFilterData(oNewData, false);
+                    Object.keys(oNewData).forEach(function (sKey) {
+                        var oControl = oSmartFilterBar.getControlByKey(sKey);
+                        if (oControl.setValue && oControl.getTokens) { oControl.setValue(""); }
+                        if (oControl.setValueState) { oControl.setValueState("None"); }
+                    });
+                    oSmartFilterBar.fireFilterChange();
+                }.bind(this));
+            },
+
             _applyMatnrFilter: function (oEvent) {
                 var oBinding = oEvent.getParameter("bindingParams");
 
@@ -454,13 +527,21 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
             },
 
             onScrapSelect: function (oEvent) {
-                var oCheckBox = oEvent.getSource();
+                this._toggleMardFlag(oEvent.getSource(), "Scrap", "Ke šrotaci");
+            },
+
+            onDorSelect: function (oEvent) {
+                this._toggleMardFlag(oEvent.getSource(), "Dor", "Neobjednávat");
+            },
+
+            // Přepnutí příznaku materiálu na úrovni skladu v ZPMI_CKD_MARD (záznam se založí, pokud neexistuje)
+            _toggleMardFlag: function (oCheckBox, sProperty, sText) {
                 var oRowContext = oCheckBox.getBindingContext();
                 var sWerks = oRowContext.getProperty("werks");
                 var sMatnr = oRowContext.getProperty("matnr");
                 var sLgort = oRowContext.getProperty("lgort");
 
-                var oModel = oCheckBox.getModel(); // or this.getView().getModel("scrapModel")
+                var oModel = oCheckBox.getModel();
 
                 var sPath = oModel.createKey("/ZPMI_CKD_MARD", {
                     Werks: sWerks,
@@ -471,39 +552,40 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 oCheckBox.setBusy(true);
                 oModel.read(sPath, {
                     success: function (oData) {
-                        oModel.update(sPath, {
-                            Scrap: !oData.Scrap
-                        }, {
+                        var oUpdate = {};
+                        oUpdate[sProperty] = !oData[sProperty];
+                        oModel.update(sPath, oUpdate, {
                             success: function () {
                                 oCheckBox.setBusy(false);
-                                sap.m.MessageToast.show("Příznak Ke šrotaci byl úspěšně aktualizován");
+                                sap.m.MessageToast.show("Příznak " + sText + " byl úspěšně aktualizován");
                             },
                             error: function (oError) {
                                 oCheckBox.setBusy(false);
-                                sap.m.MessageBox.error("Aktualizace příznaku Ke šrotaci selhala");
+                                sap.m.MessageBox.error("Aktualizace příznaku " + sText + " selhala");
                             }
                         });
                     },
                     error: function (oError) {
                         if (oError.statusCode === "404" || oError.statusCode === 404) {
-                            oModel.create("/ZPMI_CKD_MARD", {
+                            var oCreate = {
                                 Werks: sWerks,
                                 Matnr: sMatnr,
-                                Lgort: sLgort,
-                                Scrap: true
-                            }, {
+                                Lgort: sLgort
+                            };
+                            oCreate[sProperty] = true;
+                            oModel.create("/ZPMI_CKD_MARD", oCreate, {
                                 success: function () {
                                     oCheckBox.setBusy(false);
-                                    sap.m.MessageToast.show("Příznak Ke šrotaci byl úspěšně vytvořen");
+                                    sap.m.MessageToast.show("Příznak " + sText + " byl úspěšně vytvořen");
                                 },
                                 error: function (oCreateError) {
                                     oCheckBox.setBusy(false);
-                                    sap.m.MessageBox.error("Vytvoření příznaku Ke šrotaci selhala");
+                                    sap.m.MessageBox.error("Vytvoření příznaku " + sText + " selhalo");
                                 }
                             });
                         } else {
                             oCheckBox.setBusy(false);
-                            sap.m.MessageBox.error("Čtení příznaku Ke šrotaci selhalo");
+                            sap.m.MessageBox.error("Čtení příznaku " + sText + " selhalo");
                         }
                     }
                 });

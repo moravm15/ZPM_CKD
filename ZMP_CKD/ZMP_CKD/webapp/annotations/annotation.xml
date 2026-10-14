@@ -58,6 +58,7 @@
                 </Annotation>
                 <Annotation Term="UI.SelectionFields">
                     <Collection>
+                        <PropertyPath>werks</PropertyPath>
                         <PropertyPath>matnr</PropertyPath>
                         <PropertyPath>lgort</PropertyPath>
                         <PropertyPath>mfrpn</PropertyPath>
