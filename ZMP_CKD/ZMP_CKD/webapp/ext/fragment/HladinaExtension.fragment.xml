@@ -57,7 +57,7 @@
                         useExportToExcel="true"
                         showRowCount="true"
                         persistencyKey="SmartTableAnalytical_Explored"
-                        initiallyVisibleFields="ChangedField,OldValue,NewValue,ChangeDate,ChangeTime,ChangedBy"
+                        initiallyVisibleFields="ChangedField,OldValue,NewValue,ChangeDate,ChangeTime,ChangedBy,NameText"
                         enableAutoBinding="true"
                         class="sapUiResponsiveContentPadding"
                         useTablePersonalisation="true"

@@ -16,41 +16,23 @@
         busyIndicatorDelay="0"
     >
         <content>
-            <f:SimpleForm
-                editable="true"
-                layout="ResponsiveGridLayout"
-                labelSpanXL="3"
-                labelSpanL="3"
-                labelSpanM="3"
-                labelSpanS="12"
-                adjustLabelSpan="false"
-                emptySpanXL="2"
-                emptySpanL="2"
-                emptySpanM="2"
-                emptySpanS="0"
-                columnsXL="1"
-                columnsL="1"
-                columnsM="1"
-                singleContainerFullSize="false"
+            <FeedInput
+                post="onMatnrPoznamkaAccept"
+                tooltip="Zadejte poznámku"
+                maxLength="256"
+                value="{materialNoteModel>/note}"
+                class="sapUiSmallMarginTopBottom"
+            />
+            <List
+                showSeparators="Inner"
+                items="{path:'poznamkyModel>/results/', sorter: [{path:'timestamp', descending : true}]}"
             >
-                <f:content>
-                    <FeedInput
-                        post="onMatnrPoznamkaAccept"
-                        tooltip="Zadejte poznámku"
-                        maxLength="256"
-                        value="{materialNoteModel>/note}"
-                        class="sapUiSmallMarginTopBottom"
-                    />
-                    <List
-                        showSeparators="Inner"
-                        items="{path:'poznamkyModel>/results/', sorter: [{path:'timestamp', descending : true}]}"
-                    >
-                        <FeedListItem
-                            id="feedList"
-                            sender="{poznamkyModel>poster}"
-                            senderPress="onSenderPress"
-                            iconDensityAware="false"
-                            timestamp="{
+                <FeedListItem
+                    id="feedList"
+                    sender="{poznamkyModel>poster}"
+                    senderPress="onSenderPress"
+                    iconDensityAware="false"
+                    timestamp="{
                                 path: 'poznamkyModel>timestamp',
                                 type: 'sap.ui.model.odata.type.DateTime',
                                 formatOptions: {
@@ -58,12 +40,10 @@
                                     UTC: false
                                 }
                             }"
-                            text="{poznamkyModel>note}"
-                            convertLinksToAnchorTags="All"
-                        />
-                    </List>
-                </f:content>
-            </f:SimpleForm>
+                    text="{poznamkyModel>note}"
+                    convertLinksToAnchorTags="All"
+                />
+            </List>
         </content>
         <buttons>
             <Button
