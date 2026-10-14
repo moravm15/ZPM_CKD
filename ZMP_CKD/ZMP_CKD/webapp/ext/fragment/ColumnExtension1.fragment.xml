@@ -273,7 +273,7 @@
         <table:customData>
             <core:CustomData
                 key="p13nData"
-                value="\{&quot;columnIndex&quot;: &quot;8&quot;, &quot;leadingProperty&quot;: &quot;dno&quot;, &quot;columnKey&quot;: &quot;ColumnExtension7&quot;, &quot;sortProperty&quot;: &quot;dno&quot;, &quot;filterProperty&quot;: &quot;dno&quot;}"
+                value="\{&quot;columnIndex&quot;: &quot;14&quot;, &quot;leadingProperty&quot;: &quot;dno&quot;, &quot;columnKey&quot;: &quot;ColumnExtension7&quot;, &quot;sortProperty&quot;: &quot;dno&quot;, &quot;filterProperty&quot;: &quot;dno&quot;}"
             />
         </table:customData>
     </table:Column>
