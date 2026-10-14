@@ -242,6 +242,7 @@
             },
             "tableSettings": {
               "multiSelect": true,
+              "selectAll": true,
               "type": "GridTable"
             }
           }
