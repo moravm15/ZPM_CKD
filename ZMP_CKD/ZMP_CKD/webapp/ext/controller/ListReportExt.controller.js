@@ -26,7 +26,6 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
 
             // Předvyplnění závodu (WRK) a skladu (LAG) z uživatelských parametrů - jen pro standardní variantu
             onInitSmartFilterBarExtension: function (oEvent) {
-                console.log("onInitSmartFilterBarExtension")
                 var oSmartFilterBar = oEvent.getSource();
                 this._applyUserDefaults(oSmartFilterBar);
                 oSmartFilterBar.attachAfterVariantLoad(function () {
