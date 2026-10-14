@@ -251,4 +251,30 @@
             />
         </table:customData>
     </table:Column>
+
+    <table:Column
+        id="FioriTools::ColumnExtension8"
+        sortProperty="dno"
+        filterProperty="dno"
+    >
+        <table:label>
+            <Label
+                id="FioriTools::ColumnExtension8Label"
+                text="Neobjednávat"
+            />
+        </table:label>
+        <table:template>
+            <CheckBox
+                selected="{dno}"
+                select="onDNOSelect"
+                busyIndicatorDelay="0"
+            />
+        </table:template>
+        <table:customData>
+            <core:CustomData
+                key="p13nData"
+                value="\{&quot;columnIndex&quot;: &quot;8&quot;, &quot;leadingProperty&quot;: &quot;dno&quot;, &quot;columnKey&quot;: &quot;ColumnExtension7&quot;, &quot;sortProperty&quot;: &quot;dno&quot;, &quot;filterProperty&quot;: &quot;dno&quot;}"
+            />
+        </table:customData>
+    </table:Column>
 </core:FragmentDefinition>

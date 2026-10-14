@@ -529,8 +529,8 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 this._toggleMardFlag(oEvent.getSource(), "Scrap", "Ke šrotaci");
             },
 
-            onDorSelect: function (oEvent) {
-                this._toggleMardFlag(oEvent.getSource(), "Dor", "Neobjednávat");
+            onDNOSelect: function (oEvent) {
+                this._toggleMardFlag(oEvent.getSource(), "Dno", "Neobjednávat");
             },
 
             // Přepnutí příznaku materiálu na úrovni skladu v ZPMI_CKD_MARD (záznam se založí, pokud neexistuje)
