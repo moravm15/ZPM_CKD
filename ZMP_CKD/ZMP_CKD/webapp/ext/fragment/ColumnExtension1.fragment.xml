@@ -204,7 +204,7 @@
         <table:label>
             <Label
                 id="FioriTools::ColumnExtension6Label"
-                text="Poznámky"
+                text="Poznámka Cockpit"
             />
         </table:label>
         <table:template>
