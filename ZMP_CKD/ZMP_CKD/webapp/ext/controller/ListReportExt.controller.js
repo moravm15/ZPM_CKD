@@ -628,6 +628,50 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 }
             },
 
+            // Texty poptávky podle jazyka (číselník jazyků v dialogu)
+            _mPoptavkaTexts: {
+                CS: {
+                    nazev: "Český jazyk",
+                    subject: "Nezávazná cenová nabídka",
+                    fileName: "Poptavka.eml",
+                    colSap: "SAP",
+                    colName: "Název materiálu",
+                    colCdv: "ČDV",
+                    colQty: "Počet",
+                    colFoto: "Foto",
+                    body: "<p>Dobrý den,</p>" +
+                        "<p>prosím o nezávaznou cenovou nabídku na následující materiál:</p>",
+                    footer: "<p><b>Cenu</b> prosím <b><span style=\"color:red;\">včetně dopravy a balného</span></b> do závodu ŠKODA AUTO a.s.<br/>" +
+                        "Dále prosím uveďte <b><span style=\"color:red;\">termín dodání</span></b>.<br/>" +
+                        "V případě, že tyto náklady do cenové nabídky neuvedete a vystavíte fakturu s dopravným, " +
+                        "nebude Vám toto dodatečně proplaceno.</p>" +
+                        "<p style=\"font-size:9pt;\">Upozorňujeme na to, že předložením Vaší nabídky nevzniká ŠKODA AUTO a.s. " +
+                        "žádná povinnost k uzavření smlouvy.</p>" +
+                        "<p>Děkuji předem za nabídku a přeji hezký den.</p>" +
+                        "<p>S pozdravem</p>"
+                },
+                DE: {
+                    nazev: "Německý jazyk",
+                    subject: "Unverbindliches Preisangebot",
+                    fileName: "Anfrage.eml",
+                    colSap: "SAP",
+                    colName: "Materialbezeichnung",
+                    colCdv: "Herstellerteilenummer",
+                    colQty: "Menge",
+                    colFoto: "Foto",
+                    body: "<p>Sehr geehrte Damen und Herren,</p>" +
+                        "<p>bitte senden Sie uns ein unverbindliches Preisangebot für folgendes Material:</p>",
+                    footer: "<p>Bitte geben Sie den <b>Preis</b> <b><span style=\"color:red;\">inklusive Transport- und Verpackungskosten</span></b> an das Werk ŠKODA AUTO a.s. an.<br/>" +
+                        "Bitte nennen Sie uns außerdem den <b><span style=\"color:red;\">Liefertermin</span></b>.<br/>" +
+                        "Sollten Sie diese Kosten im Angebot nicht angeben und eine Rechnung mit Frachtkosten ausstellen, " +
+                        "werden diese nachträglich nicht erstattet.</p>" +
+                        "<p style=\"font-size:9pt;\">Wir weisen darauf hin, dass durch die Abgabe Ihres Angebots für die ŠKODA AUTO a.s. " +
+                        "keine Verpflichtung zum Vertragsabschluss entsteht.</p>" +
+                        "<p>Vielen Dank im Voraus für Ihr Angebot. Ich wünsche Ihnen einen schönen Tag.</p>" +
+                        "<p>Mit freundlichen Grüßen</p>"
+                }
+            },
+
             onPoptavkaCreate: function () {
                 var oRespTable = this.getView().byId("zpmckd::sap.suite.ui.generic.template.ListReport.view.ListReport::ZPMI_CKD_CUST--responsiveTable");
                 var oGridTable = this.getView().byId("zpmckd::sap.suite.ui.generic.template.ListReport.view.ListReport::ZPMI_CKD_CUST--GridTable");
@@ -645,55 +689,74 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                     });
                 }
 
+                // Data vybraných řádků si uložíme, dialog je zpracuje až po volbě jazyka
+                this._aPoptavkaObjects = aSelectedItems.map(function (oItem) {
+                    return oItem.getBindingContext().getObject();
+                }).filter(Boolean);
+
+                var mTexts = this._mPoptavkaTexts;
+                this.getView().setModel(new JSONModel({
+                    kontakt: "",
+                    jazyk: "CS",
+                    jazyky: Object.keys(mTexts).map(function (sKey) {
+                        return { key: sKey, text: mTexts[sKey].nazev };
+                    })
+                }), "poptavkaModel");
+
+                if (!this.oPoptavkaDialog) {
+                    this.oPoptavkaDialog = this.loadFragment({
+                        name: "zpmckd.ext.fragment.PoptavkaExtension"
+                    });
+                }
+                this.oPoptavkaDialog.then(function (oDialog) {
+                    oDialog.open();
+                });
+            },
+
+            onPoptavkaConfirm: function () {
+                var sJazyk = this.getView().getModel("poptavkaModel").getProperty("/jazyk");
+                var oDialog = this.getView().byId("poptavkaDialog");
+                oDialog.setBusy(true);
+                this._createPoptavkaEml(this._aPoptavkaObjects || [], sJazyk).then(function () {
+                    oDialog.setBusy(false);
+                    oDialog.close();
+                }, function () {
+                    oDialog.setBusy(false);
+                    MessageBox.error("Vytvoření poptávky selhalo");
+                });
+            },
+
+            // Načtení fotky jako base64, aby šla vložit přímo do e-mailu (dodavatel nemá přístup na interní URL)
+            _loadPoptavkaImage: function (sUrl) {
+                return fetch(sUrl, { credentials: "include" }).then(function (oResponse) {
+                    if (!oResponse.ok) { throw new Error(oResponse.status); }
+                    return oResponse.blob();
+                }).then(function (oBlob) {
+                    if (oBlob.type.indexOf("image/") !== 0) { throw new Error(oBlob.type); }
+                    return new Promise(function (resolve, reject) {
+                        var oReader = new FileReader();
+                        oReader.onload = function () {
+                            resolve({ type: oBlob.type, base64: String(oReader.result).split(",")[1] });
+                        };
+                        oReader.onerror = reject;
+                        oReader.readAsDataURL(oBlob);
+                    });
+                }).catch(function () {
+                    return null;
+                });
+            },
+
+            _createPoptavkaEml: function (aObjects, sJazyk) {
+                var oTexts = this._mPoptavkaTexts[sJazyk] || this._mPoptavkaTexts.CS;
+
                 // Ošetření HTML znaků v datech (např. "<" v názvu materiálu)
                 var fnEscape = function (sValue) {
                     return String(sValue === undefined || sValue === null ? "" : sValue)
                         .replace(/&/g, "&amp;")
                         .replace(/</g, "&lt;")
-                        .replace(/>/g, "&gt;");
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;");
                 };
-
-                var sRowsHtml = "";
-                for (var i = 0; i < aSelectedItems.length; i++) {
-                    var oBindingObject = aSelectedItems[i].getBindingContext().getObject();
-
-                    // Počet k poptání = maximální hladina - volně použitelný počet
-                    // POZOR: uprav názvy polí podle vaší OData entity (mabst, labst, cdv)!
-                    var fMax = parseFloat(oBindingObject.mabst) || 0;
-                    var fFree = parseFloat(oBindingObject.labst) || 0;
-                    var fPocet = Math.max(fMax - fFree, 0);
-
-                    sRowsHtml +=
-                        "<tr>" +
-                        "<td style=\"padding:4px 16px 4px 0;vertical-align:top;\">" + fnEscape(oBindingObject.matnr) + "</td>" +
-                        "<td style=\"padding:4px 16px 4px 0;vertical-align:top;\">" + fnEscape(oBindingObject.maktx) + "</td>" +
-                        "<td style=\"padding:4px 16px 4px 0;vertical-align:top;\">" + fnEscape(oBindingObject.cdv) + "</td>" +
-                        "<td style=\"padding:4px 16px 4px 0;vertical-align:top;\">" + fPocet + " " + fnEscape(oBindingObject.meins) + "</td>" +
-                        "</tr>";
-                }
-
-                var sHtmlBody =
-                    "<html><body style=\"font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#000;\">" +
-                    "<p>Dobrý den,</p>" +
-                    "<p>prosím o nezávaznou cenovou nabídku na následující materiál:</p>" +
-                    "<table style=\"border-collapse:collapse;font-family:Calibri,Arial,sans-serif;font-size:11pt;\">" +
-                    "<tr>" +
-                    "<th align=\"left\" style=\"padding:4px 16px 4px 0;\">SAP</th>" +
-                    "<th align=\"left\" style=\"padding:4px 16px 4px 0;\">Název materiálu</th>" +
-                    "<th align=\"left\" style=\"padding:4px 16px 4px 0;\">ČDV</th>" +
-                    "<th align=\"left\" style=\"padding:4px 16px 4px 0;\">Počet</th>" +
-                    "</tr>" +
-                    sRowsHtml +
-                    "</table>" +
-                    "<p><b>Cenu</b> prosím <b><span style=\"color:red;\">včetně dopravy a balného</span></b> do závodu ŠKODA AUTO a.s.<br/>" +
-                    "Dále prosím uveďte <b><span style=\"color:red;\">termín dodání</span></b>.<br/>" +
-                    "V případě, že tyto náklady do cenové nabídky neuvedete a vystavíte fakturu s dopravným, " +
-                    "nebude Vám toto dodatečně proplaceno.</p>" +
-                    "<p style=\"font-size:9pt;\">Upozorňujeme na to, že předložením Vaší nabídky nevzniká ŠKODA AUTO a.s. " +
-                    "žádná povinnost k uzavření smlouvy.</p>" +
-                    "<p>Děkuji předem za nabídku a přeji hezký den.</p>" +
-                    "<p>S pozdravem</p>" +
-                    "</body></html>";
 
                 // Base64 s podporou UTF-8 (kvůli diakritice)
                 var fnB64 = function (sText) {
@@ -701,28 +764,110 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 };
 
                 // Zalomení base64 na řádky po 76 znacích (dle RFC 2045)
-                var sBodyB64 = fnB64(sHtmlBody).replace(/(.{76})/g, "$1\r\n");
+                var fnWrap = function (sB64) {
+                    return sB64.replace(/(.{76})/g, "$1\r\n");
+                };
 
-                // X-Unsent: 1 zajistí, že Outlook otevře soubor jako rozepsaný koncept
-                var sEml =
-                    "To: \r\n" +
-                    "Subject: =?utf-8?B?" + fnB64("Nezávazná cenová nabídka") + "?=\r\n" +
-                    "X-Unsent: 1\r\n" +
-                    "MIME-Version: 1.0\r\n" +
-                    "Content-Type: text/html; charset=utf-8\r\n" +
-                    "Content-Transfer-Encoding: base64\r\n" +
-                    "\r\n" +
-                    sBodyB64;
+                // Každou fotku stáhneme jen jednou
+                var aUrls = [];
+                aObjects.forEach(function (oObject) {
+                    if (oObject.picture && aUrls.indexOf(oObject.picture) === -1) { aUrls.push(oObject.picture); }
+                });
 
-                var oBlob = new Blob([sEml], { type: "message/rfc822" });
-                var sUrl = URL.createObjectURL(oBlob);
-                var oLink = document.createElement("a");
-                oLink.href = sUrl;
-                oLink.download = "Poptavka.eml";
-                document.body.appendChild(oLink);
-                oLink.click();
-                document.body.removeChild(oLink);
-                URL.revokeObjectURL(sUrl);
+                return Promise.all(aUrls.map(this._loadPoptavkaImage)).then(function (aImages) {
+                    var aParts = [];
+                    var mImgSrc = {};
+                    aUrls.forEach(function (sUrl, i) {
+                        if (aImages[i]) {
+                            var sCid = "foto" + (i + 1) + "@zpmckd";
+                            mImgSrc[sUrl] = "cid:" + sCid;
+                            aParts.push({ cid: sCid, name: "foto" + (i + 1) + "." + aImages[i].type.split("/")[1], image: aImages[i] });
+                        } else {
+                            // Fotku se nepodařilo stáhnout - ponecháme odkaz
+                            mImgSrc[sUrl] = new URL(sUrl, window.location.href).href;
+                        }
+                    });
+
+                    var sTd = "<td style=\"padding:4px 16px 4px 0;vertical-align:top;\">";
+                    var sTh = "<th align=\"left\" style=\"padding:4px 16px 4px 0;\">";
+
+                    var sRowsHtml = "";
+                    aObjects.forEach(function (oObject) {
+                        // Počet k poptání = maximální hladina - volně použitelný počet
+                        var fMax = parseFloat(oObject.mabst) || 0;
+                        var fFree = parseFloat(oObject.labst) || 0;
+                        var fPocet = Math.max(fMax - fFree, 0);
+
+                        // Německý název z krátkého textu materiálu DE, jinak český
+                        var sNazev = sJazyk === "DE" ? (oObject.maktx_de || oObject.maktx) : oObject.maktx;
+
+                        var sFoto = oObject.picture ?
+                            "<img src=\"" + fnEscape(mImgSrc[oObject.picture]) + "\" alt=\"\" style=\"max-height:120px;max-width:160px;\"/>" : "";
+
+                        sRowsHtml +=
+                            "<tr>" +
+                            sTd + fnEscape(oObject.matnr) + "</td>" +
+                            sTd + fnEscape(sNazev) + "</td>" +
+                            sTd + fnEscape(oObject.cdv) + "</td>" +
+                            sTd + fPocet + " " + fnEscape(oObject.meins) + "</td>" +
+                            sTd + sFoto + "</td>" +
+                            "</tr>";
+                    });
+
+                    var sHtmlBody =
+                        "<html><body style=\"font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#000;\">" +
+                        oTexts.body +
+                        "<table style=\"border-collapse:collapse;font-family:Calibri,Arial,sans-serif;font-size:11pt;\">" +
+                        "<tr>" +
+                        sTh + oTexts.colSap + "</th>" +
+                        sTh + oTexts.colName + "</th>" +
+                        sTh + oTexts.colCdv + "</th>" +
+                        sTh + oTexts.colQty + "</th>" +
+                        sTh + oTexts.colFoto + "</th>" +
+                        "</tr>" +
+                        sRowsHtml +
+                        "</table>" +
+                        oTexts.footer +
+                        "</body></html>";
+
+                    // X-Unsent: 1 zajistí, že Outlook otevře soubor jako rozepsaný koncept
+                    var sBoundary = "----=_zpmckd_" + Date.now();
+                    var sEml =
+                        "To: \r\n" +
+                        "Subject: =?utf-8?B?" + fnB64(oTexts.subject) + "?=\r\n" +
+                        "X-Unsent: 1\r\n" +
+                        "MIME-Version: 1.0\r\n" +
+                        "Content-Type: multipart/related; type=\"text/html\"; boundary=\"" + sBoundary + "\"\r\n" +
+                        "\r\n" +
+                        "--" + sBoundary + "\r\n" +
+                        "Content-Type: text/html; charset=utf-8\r\n" +
+                        "Content-Transfer-Encoding: base64\r\n" +
+                        "\r\n" +
+                        fnWrap(fnB64(sHtmlBody)) + "\r\n";
+
+                    // Fotky jako vložené přílohy (inline), na které odkazuje HTML přes cid:
+                    aParts.forEach(function (oPart) {
+                        sEml +=
+                            "--" + sBoundary + "\r\n" +
+                            "Content-Type: " + oPart.image.type + "; name=\"" + oPart.name + "\"\r\n" +
+                            "Content-Transfer-Encoding: base64\r\n" +
+                            "Content-ID: <" + oPart.cid + ">\r\n" +
+                            "Content-Disposition: inline; filename=\"" + oPart.name + "\"\r\n" +
+                            "\r\n" +
+                            fnWrap(oPart.image.base64) + "\r\n";
+                    });
+                    sEml += "--" + sBoundary + "--\r\n";
+
+                    var oBlob = new Blob([sEml], { type: "message/rfc822" });
+                    var sUrl = URL.createObjectURL(oBlob);
+                    var oLink = document.createElement("a");
+                    oLink.href = sUrl;
+                    oLink.download = oTexts.fileName;
+                    document.body.appendChild(oLink);
+                    oLink.click();
+                    document.body.removeChild(oLink);
+                    URL.revokeObjectURL(sUrl);
+                });
             },
 
             poptavkaDialogAfterClose: function (oEvent) {

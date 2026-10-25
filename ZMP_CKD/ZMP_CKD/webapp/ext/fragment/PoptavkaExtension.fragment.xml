@@ -1,0 +1,77 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+>
+    <Dialog
+        id="poptavkaDialog"
+        title="Vytvořit poptávku"
+        afterClose="poptavkaDialogAfterClose"
+        contentWidth="32rem"
+        resizable="true"
+        draggable="true"
+        busyIndicatorDelay="0"
+    >
+        <content>
+            <f:SimpleForm
+                editable="true"
+                layout="ResponsiveGridLayout"
+                labelSpanXL="4"
+                labelSpanL="4"
+                labelSpanM="4"
+                labelSpanS="12"
+                adjustLabelSpan="false"
+                emptySpanXL="0"
+                emptySpanL="0"
+                emptySpanM="0"
+                emptySpanS="0"
+                columnsXL="1"
+                columnsL="1"
+                columnsM="1"
+                singleContainerFullSize="false"
+            >
+                <f:content>
+                    <!-- Volba kontaktu z adresáře - připraveno pro budoucí úpravu -->
+                    <Label text="Vybrat kontakt" />
+                    <Input
+                        id="poptavkaKontaktInput"
+                        value="{poptavkaModel>/kontakt}"
+                        placeholder="(budoucí úprava)"
+                        showValueHelp="true"
+                        enabled="false"
+                    />
+                    <Label
+                        text="Vybrat jazyk"
+                        required="true"
+                    />
+                    <Select
+                        id="poptavkaJazykSelect"
+                        selectedKey="{poptavkaModel>/jazyk}"
+                        items="{poptavkaModel>/jazyky}"
+                        width="100%"
+                    >
+                        <core:Item
+                            key="{poptavkaModel>key}"
+                            text="{poptavkaModel>text}"
+                        />
+                    </Select>
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <buttons>
+            <Button
+                icon="sap-icon://accept"
+                text="Vytvořit"
+                tooltip="Vytvořit poptávku"
+                press="onPoptavkaConfirm"
+                type="Emphasized"
+            />
+            <Button
+                icon="sap-icon://decline"
+                text="Zrušit"
+                tooltip="Zrušit"
+                press="onPoptavkaCloseDialog"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>
