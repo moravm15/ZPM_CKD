@@ -536,58 +536,77 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
             // Přepnutí příznaku materiálu na úrovni skladu v ZPMI_CKD_MARD (záznam se založí, pokud neexistuje)
             _toggleMardFlag: function (oCheckBox, sProperty, sText) {
                 var oRowContext = oCheckBox.getBindingContext();
-                var sWerks = oRowContext.getProperty("werks");
-                var sMatnr = oRowContext.getProperty("matnr");
-                var sLgort = oRowContext.getProperty("lgort");
-
-                var oModel = oCheckBox.getModel();
-
-                var sPath = oModel.createKey("/ZPMI_CKD_MARD", {
-                    Werks: sWerks,
-                    Matnr: sMatnr,
-                    Lgort: sLgort
-                });
 
                 oCheckBox.setBusy(true);
-                oModel.read(sPath, {
-                    success: function (oData) {
-                        var oUpdate = {};
-                        oUpdate[sProperty] = !oData[sProperty];
-                        oModel.update(sPath, oUpdate, {
-                            success: function () {
-                                oCheckBox.setBusy(false);
-                                sap.m.MessageToast.show("Příznak " + sText + " byl úspěšně aktualizován");
-                            },
-                            error: function (oError) {
-                                oCheckBox.setBusy(false);
-                                sap.m.MessageBox.error("Aktualizace příznaku " + sText + " selhala");
-                            }
-                        });
-                    },
-                    error: function (oError) {
-                        if (oError.statusCode === "404" || oError.statusCode === 404) {
-                            var oCreate = {
-                                Werks: sWerks,
-                                Matnr: sMatnr,
-                                Lgort: sLgort
-                            };
-                            oCreate[sProperty] = true;
-                            oModel.create("/ZPMI_CKD_MARD", oCreate, {
-                                success: function () {
-                                    oCheckBox.setBusy(false);
-                                    sap.m.MessageToast.show("Příznak " + sText + " byl úspěšně vytvořen");
-                                },
-                                error: function (oCreateError) {
-                                    oCheckBox.setBusy(false);
-                                    sap.m.MessageBox.error("Vytvoření příznaku " + sText + " selhalo");
-                                }
-                            });
-                        } else {
-                            oCheckBox.setBusy(false);
-                            sap.m.MessageBox.error("Čtení příznaku " + sText + " selhalo");
-                        }
-                    }
+                this._upsertMard(oCheckBox.getModel(), oRowContext.getObject(), function (oData) {
+                    var oValues = {};
+                    oValues[sProperty] = oData ? !oData[sProperty] : true;
+                    return oValues;
+                }).then(function (bCreated) {
+                    oCheckBox.setBusy(false);
+                    sap.m.MessageToast.show("Příznak " + sText + (bCreated ? " byl úspěšně vytvořen" : " byl úspěšně aktualizován"));
+                }, function (sStep) {
+                    oCheckBox.setBusy(false);
+                    var mErrors = {
+                        read: "Čtení příznaku " + sText + " selhalo",
+                        update: "Aktualizace příznaku " + sText + " selhala",
+                        create: "Vytvoření příznaku " + sText + " selhalo"
+                    };
+                    sap.m.MessageBox.error(mErrors[sStep]);
                 });
+            },
+
+            // Zápis do ZPMI_CKD_MARD - existující záznam se aktualizuje, jinak se založí.
+            // fnValues dostane aktuální data záznamu (nebo null, pokud neexistuje) a vrací měněné hodnoty.
+            // Promise vrací true, pokud byl záznam založen; při chybě vrací krok, který selhal (read/update/create).
+            _upsertMard: function (oModel, oRow, fnValues) {
+                var oKeys = {
+                    Werks: oRow.werks,
+                    Matnr: oRow.matnr,
+                    Lgort: oRow.lgort
+                };
+                var sPath = oModel.createKey("/ZPMI_CKD_MARD", oKeys);
+
+                return new Promise(function (resolve, reject) {
+                    oModel.read(sPath, {
+                        success: function (oData) {
+                            oModel.update(sPath, fnValues(oData), {
+                                success: function () { resolve(false); },
+                                error: function () { reject("update"); }
+                            });
+                        },
+                        error: function (oError) {
+                            if (oError.statusCode === "404" || oError.statusCode === 404) {
+                                oModel.create("/ZPMI_CKD_MARD", Object.assign({}, oKeys, fnValues(null)), {
+                                    success: function () { resolve(true); },
+                                    error: function () { reject("create"); }
+                                });
+                            } else {
+                                reject("read");
+                            }
+                        }
+                    });
+                });
+            },
+
+            // Uložení poptávajícího a data poptávky k vybraným materiálům (sloupec Poptal)
+            _savePoptavkaRequisitioner: function (aObjects) {
+                var oModel = this.getView().getModel();
+                var sUser = sap.ushell && sap.ushell.Container ? sap.ushell.Container.getUser().getId() : "";
+                var oToday = new Date();
+                // DATS - datum bez času, posíláme jako půlnoc UTC
+                var oRequestDay = new Date(Date.UTC(oToday.getFullYear(), oToday.getMonth(), oToday.getDate()));
+
+                return Promise.all(aObjects.map(function (oObject) {
+                    return this._upsertMard(oModel, oObject, function () {
+                        return {
+                            Requisitioner: sUser,
+                            RequestDay: oRequestDay
+                        };
+                    });
+                }.bind(this))).then(function () {
+                    if (this._oMainSmartTable) { this._oMainSmartTable.rebindTable(); }
+                }.bind(this));
             },
 
             onSenderPress: function (oEvent) {
@@ -717,10 +736,14 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 var sJazyk = this.getView().getModel("poptavkaModel").getProperty("/jazyk");
                 var oDialog = this.getView().byId("poptavkaDialog");
                 oDialog.setBusy(true);
-                this._createPoptavkaEml(this._aPoptavkaObjects || [], sJazyk).then(function () {
+                var aObjects = this._aPoptavkaObjects || [];
+                this._createPoptavkaEml(aObjects, sJazyk).then(function () {
                     oDialog.setBusy(false);
                     oDialog.close();
-                }, function () {
+                    this._savePoptavkaRequisitioner(aObjects).catch(function () {
+                        MessageBox.error("Uložení poptávajícího selhalo");
+                    });
+                }.bind(this), function () {
                     oDialog.setBusy(false);
                     MessageBox.error("Vytvoření poptávky selhalo");
                 });
