@@ -749,23 +749,109 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                 });
             },
 
-            // Načtení fotky jako base64, aby šla vložit přímo do e-mailu (dodavatel nemá přístup na interní URL)
+            // Velikost fotky v e-mailu (zobrazení v px); fotka se uloží v dvojnásobném rozlišení kvůli ostrosti
+            _iPoptavkaImgWidth: 107,
+            _iPoptavkaImgHeight: 80,
+
+            // Rozměry pro zobrazení - poměr stran zachován, nikdy nezvětšujeme
+            _fitPoptavkaImage: function (iWidth, iHeight, iMaxWidth, iMaxHeight) {
+                var fScale = Math.min(iMaxWidth / iWidth, iMaxHeight / iHeight, 1);
+                return {
+                    width: Math.max(Math.round(iWidth * fScale), 1),
+                    height: Math.max(Math.round(iHeight * fScale), 1)
+                };
+            },
+
+            // Načtení fotky jako zmenšeného JPEG v base64, aby šla vložit přímo do e-mailu (dodavatel nemá přístup na interní URL).
+            // Pokud stažení selže (např. CORS na serveru s fotkami), vrací jen rozměry pro odkaz na interní URL.
             _loadPoptavkaImage: function (sUrl) {
+                var iMaxWidth = this._iPoptavkaImgWidth;
+                var iMaxHeight = this._iPoptavkaImgHeight;
+                var fnFit = this._fitPoptavkaImage;
+
+                var fnLoadImg = function (sSrc) {
+                    return new Promise(function (resolve, reject) {
+                        var oImg = new Image();
+                        oImg.onload = function () { resolve(oImg); };
+                        oImg.onerror = reject;
+                        oImg.src = sSrc;
+                    });
+                };
+
                 return fetch(sUrl, { credentials: "include" }).then(function (oResponse) {
                     if (!oResponse.ok) { throw new Error(oResponse.status); }
                     return oResponse.blob();
                 }).then(function (oBlob) {
                     if (oBlob.type.indexOf("image/") !== 0) { throw new Error(oBlob.type); }
-                    return new Promise(function (resolve, reject) {
-                        var oReader = new FileReader();
-                        oReader.onload = function () {
-                            resolve({ type: oBlob.type, base64: String(oReader.result).split(",")[1] });
+                    var sBlobUrl = URL.createObjectURL(oBlob);
+                    return fnLoadImg(sBlobUrl).then(function (oImg) {
+                        URL.revokeObjectURL(sBlobUrl);
+                        var oSize = fnFit(oImg.naturalWidth, oImg.naturalHeight, iMaxWidth, iMaxHeight);
+                        var oCanvas = document.createElement("canvas");
+                        oCanvas.width = oSize.width * 2;
+                        oCanvas.height = oSize.height * 2;
+                        var oCtx = oCanvas.getContext("2d");
+                        // Bílé pozadí kvůli průhledným PNG (JPEG průhlednost nemá)
+                        oCtx.fillStyle = "#fff";
+                        oCtx.fillRect(0, 0, oCanvas.width, oCanvas.height);
+                        oCtx.drawImage(oImg, 0, 0, oCanvas.width, oCanvas.height);
+                        return {
+                            type: "image/jpeg",
+                            base64: oCanvas.toDataURL("image/jpeg", 0.85).split(",")[1],
+                            width: oSize.width,
+                            height: oSize.height
                         };
-                        oReader.onerror = reject;
-                        oReader.readAsDataURL(oBlob);
+                    }, function (oError) {
+                        URL.revokeObjectURL(sBlobUrl);
+                        throw oError;
                     });
                 }).catch(function () {
-                    return null;
+                    // Rozměry jdou zjistit i bez CORS, obsah fotky ale ne
+                    return fnLoadImg(sUrl).then(function (oImg) {
+                        var oSize = fnFit(oImg.naturalWidth, oImg.naturalHeight, iMaxWidth, iMaxHeight);
+                        return { width: oSize.width, height: oSize.height };
+                    }, function () {
+                        return { width: iMaxWidth, height: iMaxHeight };
+                    });
+                });
+            },
+
+            // Názvy materiálů v jazyce poptávky z ZPMI_CKD_MAT_DESC (Language v ISO, např. "DE") - mapa matnr -> název
+            _readPoptavkaDescriptions: function (aObjects, sJazyk) {
+                var aMatnr = [];
+                aObjects.forEach(function (oObject) {
+                    if (aMatnr.indexOf(oObject.matnr) === -1) { aMatnr.push(oObject.matnr); }
+                });
+                if (!aMatnr.length) { return Promise.resolve({}); }
+
+                var oModel = this.getView().getModel();
+                return new Promise(function (resolve) {
+                    oModel.read("/ZPMI_CKD_MAT_DESC", {
+                        filters: [new Filter({
+                            filters: [
+                                new Filter("Language", FilterOperator.EQ, sJazyk),
+                                new Filter({
+                                    filters: aMatnr.map(function (sMatnr) {
+                                        return new Filter("Product", FilterOperator.EQ, sMatnr);
+                                    }),
+                                    and: false
+                                })
+                            ],
+                            and: true
+                        })],
+                        urlParameters: { "$top": aMatnr.length },
+                        success: function (oData) {
+                            var mNazvy = {};
+                            oData.results.forEach(function (oDesc) {
+                                if (oDesc.ProductDescription) { mNazvy[oDesc.Product] = oDesc.ProductDescription; }
+                            });
+                            resolve(mNazvy);
+                        },
+                        // Bez překladů poptávku nezastavujeme - použije se český název
+                        error: function () {
+                            resolve({});
+                        }
+                    });
                 });
             },
 
@@ -797,19 +883,31 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                     if (oObject.picture && aUrls.indexOf(oObject.picture) === -1) { aUrls.push(oObject.picture); }
                 });
 
-                return Promise.all(aUrls.map(this._loadPoptavkaImage)).then(function (aImages) {
+                return Promise.all([
+                    Promise.all(aUrls.map(this._loadPoptavkaImage.bind(this))),
+                    this._readPoptavkaDescriptions(aObjects, sJazyk)
+                ]).then(function (aResults) {
+                    var aImages = aResults[0];
+                    var mNazvy = aResults[1];
                     var aParts = [];
-                    var mImgSrc = {};
+                    var mImg = {};
+                    var iNotEmbedded = 0;
                     aUrls.forEach(function (sUrl, i) {
-                        if (aImages[i]) {
+                        var oImage = aImages[i];
+                        if (oImage.base64) {
                             var sCid = "foto" + (i + 1) + "@zpmckd";
-                            mImgSrc[sUrl] = "cid:" + sCid;
-                            aParts.push({ cid: sCid, name: "foto" + (i + 1) + "." + aImages[i].type.split("/")[1], image: aImages[i] });
+                            mImg[sUrl] = { src: "cid:" + sCid, width: oImage.width, height: oImage.height };
+                            aParts.push({ cid: sCid, name: "foto" + (i + 1) + ".jpg", image: oImage });
                         } else {
-                            // Fotku se nepodařilo stáhnout - ponecháme odkaz
-                            mImgSrc[sUrl] = new URL(sUrl, window.location.href).href;
+                            // Fotku se nepodařilo stáhnout - ponecháme odkaz (zobrazí se jen v interní síti)
+                            mImg[sUrl] = { src: new URL(sUrl, window.location.href).href, width: oImage.width, height: oImage.height };
+                            iNotEmbedded++;
                         }
                     });
+                    if (iNotEmbedded) {
+                        MessageBox.warning("Počet fotek, které se nepodařilo vložit do e-mailu: " + iNotEmbedded +
+                            ". Fotky jsou v e-mailu jen jako odkaz a příjemce mimo síť ŠKODA AUTO je neuvidí.");
+                    }
 
                     var sTd = "<td style=\"padding:4px 16px 4px 0;vertical-align:top;\">";
                     var sTh = "<th align=\"left\" style=\"padding:4px 16px 4px 0;\">";
@@ -821,17 +919,20 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/m/Messag
                         var fFree = parseFloat(oObject.labst) || 0;
                         var fPocet = Math.max(fMax - fFree, 0);
 
-                        // Německý název z krátkého textu materiálu DE, jinak český
-                        var sNazev = sJazyk === "DE" ? (oObject.maktx_de || oObject.maktx) : oObject.maktx;
+                        // Název v jazyce poptávky, pokud chybí, tak český
+                        var sNazev = mNazvy[oObject.matnr] || oObject.maktx;
 
-                        var sFoto = oObject.picture ?
-                            "<img src=\"" + fnEscape(mImgSrc[oObject.picture]) + "\" alt=\"\" style=\"max-height:120px;max-width:160px;\"/>" : "";
+                        // Rozměry i jako atributy - Outlook (desktop) CSS max-width/max-height ignoruje
+                        var oImg = mImg[oObject.picture];
+                        var sFoto = oImg ?
+                            "<img src=\"" + fnEscape(oImg.src) + "\" alt=\"\" width=\"" + oImg.width + "\" height=\"" + oImg.height +
+                            "\" style=\"width:" + oImg.width + "px;height:" + oImg.height + "px;\"/>" : "";
 
                         sRowsHtml +=
                             "<tr>" +
                             sTd + fnEscape(oObject.matnr) + "</td>" +
                             sTd + fnEscape(sNazev) + "</td>" +
-                            sTd + fnEscape(oObject.cdv) + "</td>" +
+                            sTd + fnEscape(oObject.mfrpn) + "</td>" +
                             sTd + fPocet + " " + fnEscape(oObject.meins) + "</td>" +
                             sTd + sFoto + "</td>" +
                             "</tr>";
